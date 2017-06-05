@@ -1,0 +1,27 @@
+{
+  "name": "think_lib",
+  "version": "1.0.0",
+  "description": "ThinkNode and ThinkKoa functions Lib.",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run eslint && npm run test-cov",
+    "test-cov": "istanbul cover ./node_modules/mocha/bin/_mocha -- -t 50000 --recursive  -R spec test/",
+    "prepublish": "npm test",
+    "eslint": "eslint index.js"
+  },
+  "engines": {
+    "node": ">6.0.0"
+  },
+  "author": "richenlin",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.22.1",
+    "babel-eslint": "^7.1.1",
+    "eslint": "^3.15.0",
+    "istanbul": "^0.4.5",
+    "mocha": "^3.2.0"
+  },
+  "dependencies": {
+    "lodash": "^4.17.4"
+  }
+}
