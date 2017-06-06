@@ -240,6 +240,18 @@ lib.escapeSpecial = function (str) {
     return str;
 };
 
+
+/**
+ * 大写首字符
+ * 
+ * @param {string} name 
+ * @returns {string} 
+ */
+lib.ucFirst = function (name) {
+    name = (name || '') + '';
+    return name.slice(0, 1).toUpperCase() + name.slice(1).toLowerCase();
+};
+
 /**
  * md5
  *
@@ -642,45 +654,17 @@ lib.generatorToPromise = function (instance, method) {
 };
 
 /**
- * console format
+ * 生成一个defer对象
  * 
- * @param {any} msg 
- * @param {any} type 
- * @param {any} showTime 
- * @param {any} debug 
+ * @returns {*} 
  */
-lib.log = function (msg, type, showTime, debug = true) {
-    let dateTime = `[${lib.datetime('', '')}] `;
-    let message = msg;
-    if (lib.isError(msg)) {
-        type = 'ERROR';
-        message = msg.stack;
-        ('prototype' in console.error) && console.error(msg.stack);
-    } else if (type === 'ERROR') {
-        type = 'ERROR';
-        if (!lib.isString(msg)) {
-            message = JSON.stringify(msg);
-        }
-        ('prototype' in console.error) && console.error(message);
-    } else if (type === 'WARNING') {
-        type = 'WARNING';
-        if (!lib.isString(msg)) {
-            message = JSON.stringify(msg);
-        }
-        ('prototype' in console.warn) && console.warn(message);
-    } else {
-        if (!lib.isString(msg)) {
-            message = JSON.stringify(msg);
-        }
-        if (lib.isNumber(showTime)) {
-            let _time = Date.now() - showTime;
-            message += '  ' + `${_time}ms`;
-        }
-        type = type || 'INFO';
-        //判断console.info是否被重写
-        ('prototype' in console.info) && console.info(message);
-    }
-    (debug || type === 'THINK') && console.log(`${dateTime}[${type}] ${message}`);
+lib.getDefer = function () {
+    let defer = {};
+    defer.promise = new Promise(function (resolve, reject) {
+        defer.resolve = resolve;
+        defer.reject = reject;
+    });
+    return defer;
 };
 
 /**
