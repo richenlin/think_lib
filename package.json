@@ -1,6 +1,6 @@
 {
   "name": "think_lib",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "ThinkNode and ThinkKoa functions Lib.",
   "main": "index.js",
   "scripts": {
@@ -12,8 +12,15 @@
   "engines": {
     "node": ">6.0.0"
   },
-  "author": "richenlin",
+  "author": {
+    "name": "richenlin",
+    "email": "richenlin@gmail.com"
+  },
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/richenlin/think_lib/issues"
+  },
+  "homepage": "https://github.com/richenlin/think_lib",
   "devDependencies": {
     "babel-core": "^6.22.1",
     "babel-eslint": "^7.1.1",
