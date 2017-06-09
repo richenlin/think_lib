@@ -532,7 +532,7 @@ lib.reFile = function (filename, nfilename) {
  * @returns 
  */
 lib.rmFile = function (p) {
-    let fn = function () {};
+    let fn = function () { };
     if (lib.isFile(p)) {
         fs.unlinkSync(p, fn);
         return true;
@@ -761,10 +761,18 @@ lib.extend = function (source, target, deep) {
 
 /**
  * v8引擎优化
- *
- * @param {object} obj
+ * 
+ * @param {any} obj 
+ * @param {boolean} [readable=false] 
  */
-lib.toFastProperties = function (obj) {
+lib.toFastProperties = function (obj, readable = false) {
+    if (readable) {
+        for (let n in obj) {
+            Object.defineProperty(obj, obj[n], {
+                writable: false
+            });
+        }
+    }
     let f = function f() { };
     f.prototype = obj;
     /*eslint-disable no-new*/
