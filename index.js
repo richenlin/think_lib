@@ -9,6 +9,7 @@
 const fs = require('fs');
 const co = require('co');
 const path = require('path');
+const net = require('net');
 const crypto = require('crypto');
 const lodash = require('lodash');
 
@@ -37,7 +38,7 @@ var lib = {
     isEqual: lodash.isEqual,
     isError: lodash.isError,
     isFunction: lodash.isFunction,
-    isIp: lodash.isIp,
+    isIp: net.isIp,
     isMap: lodash.isMap,
     isNull: lodash.isNull,
     isNaN: lodash.isNaN,
@@ -477,6 +478,51 @@ lib.chmod = function (p, mode) {
         return true;
     }
     return fs.chmodSync(p, mode);
+};
+
+/**
+ * 读取文件
+ * 返回Promise
+ * @param {string} filename 文件物理路径
+ * @param {*} enc 为空返回Buffer类型,'utf8'返回String类型
+ * @returns {*}
+ */
+lib.readFile = function (filename, enc) {
+    return new Promise(function (fulfill, reject) {
+        fs.readFile(filename, enc || 'utf8', function (err, res) {
+            return err ? reject(err) : fulfill(res);
+        });
+    });
+};
+
+/**
+ * 写入文件
+ * 返回Promise
+ * @param {string} filename
+ * @param {*} data
+ * @returns {*}
+ */
+lib.writeFile = function (filename, data) {
+    return new Promise(function (fulfill, reject) {
+        fs.writeFile(filename, data, function (err, res) {
+            return err ? reject(err) : fulfill(res);
+        });
+    });
+};
+
+/**
+ * 修改文件名
+ * 支持移动
+ * @param {string} filename
+ * @param {string} nfilename
+ * @returns {*}
+ */
+lib.reFile = function (filename, nfilename) {
+    return new Promise(function (fulfill, reject) {
+        fs.rename(filename, nfilename, function (err) {
+            return err ? reject(err) : fulfill();
+        });
+    });
 };
 
 /**
