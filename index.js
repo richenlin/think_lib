@@ -38,7 +38,7 @@ var lib = {
     isEqual: lodash.isEqual,
     isError: lodash.isError,
     isFunction: lodash.isFunction,
-    isIp: net.isIp,
+    isIP: net.isIP,
     isMap: lodash.isMap,
     isNull: lodash.isNull,
     isNaN: lodash.isNaN,
