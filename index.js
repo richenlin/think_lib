@@ -722,6 +722,9 @@ lib.getDefer = function () {
 lib.require = function (file) {
     try {
         let obj = require(file);
+        if (lib.isFunction(obj)) {
+            obj.prototype.__filename = file;
+        }
         return (obj && obj.__esModule && obj.default) ? obj.default : obj;
     } catch (e) {
         return null;
