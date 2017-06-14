@@ -14,6 +14,46 @@ const crypto = require('crypto');
 const lodash = require('lodash');
 
 /**
+ * v8引擎优化
+ *
+ * @param {object} obj
+ */
+const toFastProperties = function (obj) {
+    let f = function f() { };
+    f.prototype = obj;
+    /*eslint-disable no-new*/
+    new f();
+};
+
+/**
+ * Object.defineProperty
+ * 
+ * @param {any} obj 
+ * @param {any} property 
+ * @param {any} value 
+ * @param {boolean} [setter=false] 
+ * @returns 
+ */
+const define = function (obj, property, value, setter = false) {
+    if (setter) {
+        return Object.defineProperty(obj, property, {
+            value: value,
+            writable: true,
+            configurable: false,
+            enumerable: true
+        });
+    } else {
+        return Object.defineProperty(obj, property, {
+            get: function () {
+                return value;
+            },
+            configurable: false,
+            enumerable: true
+        });
+    }
+};
+
+/**
  * console.log 封装
  * @param str
  */
@@ -24,33 +64,35 @@ global.echo = function (str) {
     console.log('----------' + date + '----------');
 };
 
-var lib = {
-    sep: path.sep,
-    eq: lodash.eq,
-    gt: lodash.gt,
-    gte: lodash.gte,
-    lt: lodash.lt,
-    lte: lodash.lte,
-    isArray: lodash.isArray,
-    isBoolean: lodash.isBoolean,
-    isBuffer: lodash.isBuffer,
-    isDate: lodash.isDate,
-    isEqual: lodash.isEqual,
-    isError: lodash.isError,
-    isFunction: lodash.isFunction,
-    isIP: net.isIP,
-    isMap: lodash.isMap,
-    isNull: lodash.isNull,
-    isNaN: lodash.isNaN,
-    isUndefined: lodash.isUndefined,
-    isNumber: lodash.isNumber,
-    isObject: lodash.isPlainObject, //lodash中isObject把Array也返回true,因此使用isPlainObject
-    isRegexp: lodash.isRegExp,
-    isSet: lodash.isSet,
-    isString: lodash.isString,
-    isSymbol: lodash.isSymbol
+var lib = {};
 
-};
+define(lib, 'toFastProperties', toFastProperties);
+define(lib, 'define', define);
+define(lib, 'sep', path.sep);
+define(lib, 'eq', lodash.eq);
+define(lib, 'gt', lodash.gt);
+define(lib, 'gte', lodash.gte);
+define(lib, 'lt', lodash.lt);
+define(lib, 'lte', lodash.lte);
+define(lib, 'isArray', lodash.isArray);
+define(lib, 'isBoolean', lodash.isBoolean);
+define(lib, 'isBuffer', lodash.isBuffer);
+define(lib, 'isDate', lodash.isDate);
+define(lib, 'isEqual', lodash.isEqual);
+define(lib, 'isError', lodash.isError);
+define(lib, 'isFunction', lodash.isFunction);
+define(lib, 'isIP', net.isIP);
+define(lib, 'isMap', lodash.isMap);
+define(lib, 'isNull', lodash.isNull);
+define(lib, 'isNaN', lodash.isNaN);
+define(lib, 'isUndefined', lodash.isUndefined);
+define(lib, 'isNumber', lodash.isNumber);
+define(lib, 'isObject', lodash.isPlainObject); //lodash中isObject把Array也返回true,因此使用isPlainObject
+define(lib, 'isRegexp', lodash.isRegExp);
+define(lib, 'isSet', lodash.isSet);
+define(lib, 'isString', lodash.isString);
+define(lib, 'isSymbol', lodash.isSymbol);
+
 
 /**
  * 是否是仅包含数字的字符串
@@ -58,20 +100,19 @@ var lib = {
  * @param {*} obj
  * @returns {boolean}
  */
-lib.isNumberString = function (obj) {
+define(lib, 'isNumberString', function (obj) {
     let numberReg = /^((\-?\d*\.?\d*(?:e[+-]?\d*(?:\d?\.?|\.?\d?)\d*)?)|(0[0-7]+)|(0x[0-9a-f]+))$/i;
     return numberReg.test(obj);
-};
-
+});
 /**
  * 是否是标准JSON对象
  * 必须是对象或数组
  * @param {*} obj
  * @returns {boolean}
  */
-lib.isJSONObj = function (obj) {
+define(lib, 'isJSONObj', function (obj) {
     return lib.isObject(obj) || lib.isArray(obj);
-};
+});
 
 /**
  * 是否是标准的JSON字符串
@@ -79,7 +120,7 @@ lib.isJSONObj = function (obj) {
  * @param {*} obj
  * @returns {boolean}
  */
-lib.isJSONStr = function (obj) {
+define(lib, 'isJSONStr', function (obj) {
     if (!lib.isString(obj)) {
         return false;
     }
@@ -88,7 +129,7 @@ lib.isJSONStr = function (obj) {
     } catch (e) {
         return false;
     }
-};
+});
 
 /**
  * 检查对象是否为空
@@ -96,7 +137,7 @@ lib.isJSONStr = function (obj) {
  * @param {*} obj
  * @returns {boolean}
  */
-lib.isTrueEmpty = function (obj) {
+define(lib, 'isTrueEmpty', function (obj) {
     if (obj === undefined || obj === null || obj === '') {
         return true;
     }
@@ -104,7 +145,7 @@ lib.isTrueEmpty = function (obj) {
         return isNaN(obj);
     }
     return false;
-};
+});
 
 /**
  * 检查对象是否为空
@@ -112,7 +153,7 @@ lib.isTrueEmpty = function (obj) {
  * @param {*} obj
  * @returns {boolean}
  */
-lib.isEmpty = function (obj) {
+define(lib, 'isEmpty', function (obj) {
     if (obj === undefined || obj === null || obj === '') {
         return true;
     } else if (lib.isString(obj)) {
@@ -129,7 +170,7 @@ lib.isEmpty = function (obj) {
         return true;
     }
     return false;
-};
+});
 
 /**
  * 强制转换为字符串
@@ -137,12 +178,12 @@ lib.isEmpty = function (obj) {
  * @param {*} obj
  * @returns {string}
  */
-lib.toString = function (obj) {
+define(lib, 'toString', function (obj) {
     if (obj === undefined || obj === null) {
         return '';
     }
     return lodash.toString(obj);
-};
+});
 
 /**
  * 强制转换为整型
@@ -150,9 +191,9 @@ lib.toString = function (obj) {
  * @param {*} obj
  * @returns {number}
  */
-lib.toInt = function (obj) {
+define(lib, 'toInt', function (obj) {
     return isNaN(obj) ? 0 : lodash.toInteger(obj);
-};
+});
 
 /**
  * 强制转换为浮点型
@@ -160,9 +201,9 @@ lib.toInt = function (obj) {
  * @param {*} obj
  * @returns {number}
  */
-lib.toFloat = function (obj) {
+define(lib, 'toFloat', function (obj) {
     return isNaN(obj) ? 0 : parseFloat(obj);
-};
+});
 
 /**
  * 强制转换为数值
@@ -170,9 +211,9 @@ lib.toFloat = function (obj) {
  * @param {*} obj
  * @returns {number}
  */
-lib.toNumber = function (obj) {
+define(lib, 'toNumber', function (obj) {
     return isNaN(obj) ? 0 : lodash.toNumber(obj);
-};
+});
 
 /**
  * 强制转换为布尔值
@@ -180,9 +221,9 @@ lib.toNumber = function (obj) {
  * @param {*} obj
  * @returns {boolean}
  */
-lib.toBoolean = function (obj) {
+define(lib, 'toBoolean', function (obj) {
     return Boolean(obj);
-};
+});
 
 /**
  * 强制转换为数组
@@ -190,9 +231,9 @@ lib.toBoolean = function (obj) {
  * @param {*} obj
  * @returns {boolean}
  */
-lib.toArray = function (obj) {
+define(lib, 'toArray', function (obj) {
     return lodash.toArray(obj);
-};
+});
 
 /**
  * 强制转换为对象
@@ -200,9 +241,9 @@ lib.toArray = function (obj) {
  * @param {*} obj
  * @returns {boolean}
  */
-lib.toObject = function (obj) {
+define(lib, 'toObject', function (obj) {
     return lodash.toPlainObject(obj);
-};
+});
 
 /**
  * 字符转义实体
@@ -210,8 +251,8 @@ lib.toObject = function (obj) {
  * @param {string} str
  * @returns {string}
  */
-lib.escapeHtml = function (str) {
-    const htmlMaps = {
+define(lib, 'escapeHtml', function (str) {
+    let htmlMaps = {
         '<': '&lt;',
         '>': '&gt;',
         '"': '&quote;',
@@ -220,7 +261,7 @@ lib.escapeHtml = function (str) {
     return (str + '').replace(/[<>'"]/g, function (a) {
         return htmlMaps[a];
     });
-};
+});
 
 /**
  * 实体转义字符
@@ -228,8 +269,8 @@ lib.escapeHtml = function (str) {
  * @param {string} str
  * @returns {string}
  */
-lib.escapeSpecial = function (str) {
-    const specialMaps = {
+define(lib, 'escapeSpecial', function (str) {
+    let specialMaps = {
         '&lt;': '<',
         '&gt;': '>',
         '&quote;': '"',
@@ -239,8 +280,7 @@ lib.escapeSpecial = function (str) {
         str = str.replace(new RegExp(n, 'g'), specialMaps[n]);
     }
     return str;
-};
-
+});
 
 /**
  * 大写首字符
@@ -248,10 +288,10 @@ lib.escapeSpecial = function (str) {
  * @param {string} name 
  * @returns {string} 
  */
-lib.ucFirst = function (name) {
+define(lib, 'ucFirst', function (name) {
     name = (name || '') + '';
     return name.slice(0, 1).toUpperCase() + name.slice(1).toLowerCase();
-};
+});
 
 /**
  * md5
@@ -259,11 +299,11 @@ lib.ucFirst = function (name) {
  * @param {string} str
  * @returns {string}
  */
-lib.md5 = function (str) {
+define(lib, 'md5', function (str) {
     let ins = crypto.createHash('md5');
     ins.update(str + '', 'utf8');
     return ins.digest('hex');
-};
+});
 
 /**
  * rand
@@ -272,9 +312,9 @@ lib.md5 = function (str) {
  * @param {number} max
  * @returns {number}
  */
-lib.rand = function (min, max) {
+define(lib, 'rand', function (min, max) {
     return Math.floor(min + Math.random() * (max - min + 1));
-};
+});
 
 /**
  * AES字符串加密
@@ -283,7 +323,7 @@ lib.rand = function (min, max) {
  * @param {string} key 密钥 (必须为16位字符串)
  * @returns {string}
  */
-lib.encryption = function (data, key) {
+define(lib, 'encryption', function (data, key) {
     try {
         let iv = '0000000000000000';
         // let clearEncoding = 'utf8';
@@ -297,7 +337,7 @@ lib.encryption = function (data, key) {
     } catch (e) {
         return '';
     }
-};
+});
 
 /**
  * AES字符串解密
@@ -306,7 +346,7 @@ lib.encryption = function (data, key) {
  * @param {string} key 密钥 (必须为16位字符串)
  * @returns {string}
  */
-lib.decryption = function (data, key) {
+define(lib, 'decryption', function (data, key) {
     try {
         let iv = '0000000000000000';
         // let clearEncoding = 'utf8';
@@ -320,7 +360,7 @@ lib.decryption = function (data, key) {
     } catch (e) {
         return '';
     }
-};
+});
 
 /**
  * 日期时间戳及格式化
@@ -329,7 +369,7 @@ lib.decryption = function (data, key) {
  * @param {any} format
  * @returns
  */
-lib.datetime = function (date, format) {
+define(lib, 'datetime', function (date, format) {
     if (format === undefined) {
         //datetime() => now timestamp
         if (date === undefined) {
@@ -366,7 +406,7 @@ lib.datetime = function (date, format) {
         }
         return fn(new Date(), format);
     }
-};
+});
 
 /**
  * 判断值是否为数组的元素
@@ -375,7 +415,7 @@ lib.datetime = function (date, format) {
  * @param {any[]} arr
  * @returns {boolean}
  */
-lib.inArray = function (value, arr) {
+define(lib, 'inArray', function (value, arr) {
     let len = arr.length;
     for (let i = 0; i < len; i++) {
         if (arr[i] == value) {
@@ -383,7 +423,7 @@ lib.inArray = function (value, arr) {
         }
     }
     return false;
-};
+});
 
 /**
  * 数组去重
@@ -391,9 +431,9 @@ lib.inArray = function (value, arr) {
  * @param {any[]} arr
  * @returns {*}
  */
-lib.arrUnique = function (arr) {
+define(lib, 'arrUnique', function (arr) {
     return lodash.union(arr);
-};
+});
 
 /**
  * 数组删除元素
@@ -402,11 +442,11 @@ lib.arrUnique = function (arr) {
  * @param {any[]} indexs
  * @returns {*}
  */
-lib.arrRemove = function (arr, indexs) {
+define(lib, 'arrRemove', function (arr, indexs) {
     return lodash.remove(arr, function (n, i) {
         return i === indexs;
     });
-};
+});
 
 /**
  * 
@@ -414,7 +454,7 @@ lib.arrRemove = function (arr, indexs) {
  * @param {string} p
  * @returns {boolean}
  */
-lib.isFile = function (p) {
+define(lib, 'isFile', function (p) {
     if (!fs.existsSync(p)) {
         return false;
     }
@@ -424,7 +464,7 @@ lib.isFile = function (p) {
     } catch (e) {
         return false;
     }
-};
+});
 
 /**
  * 
@@ -432,7 +472,7 @@ lib.isFile = function (p) {
  * @param {string} p
  * @returns {boolean}
  */
-lib.isDir = function (p) {
+define(lib, 'isDir', function (p) {
     if (!fs.existsSync(p)) {
         return false;
     }
@@ -442,7 +482,7 @@ lib.isDir = function (p) {
     } catch (e) {
         return false;
     }
-};
+});
 
 /**
  * 判断一个文件或者目录是否可写
@@ -450,7 +490,7 @@ lib.isDir = function (p) {
  * @param {string} p
  * @returns {boolean}
  */
-lib.isWritable = function (p) {
+define(lib, 'isWritable', function (p) {
     if (!fs.existsSync(p)) {
         return false;
     }
@@ -463,7 +503,7 @@ lib.isWritable = function (p) {
     return !!(owner && (mode & parseInt('00200', 8)) ||
         group && (mode & parseInt('00020', 8)) ||
         (mode & parseInt('00002', 8)));
-};
+});
 
 /**
  * 修改目录或者文件权限
@@ -472,13 +512,13 @@ lib.isWritable = function (p) {
  * @param {string} mode
  * @returns {*}
  */
-lib.chmod = function (p, mode) {
+define(lib, 'chmod', function (p, mode) {
     mode = mode || '0777';
     if (!fs.existsSync(p)) {
         return true;
     }
     return fs.chmodSync(p, mode);
-};
+});
 
 /**
  * 读取文件
@@ -487,13 +527,13 @@ lib.chmod = function (p, mode) {
  * @param {*} enc 为空返回Buffer类型,'utf8'返回String类型
  * @returns {*}
  */
-lib.readFile = function (filename, enc) {
+define(lib, 'readFile', function (filename, enc) {
     return new Promise(function (fulfill, reject) {
         fs.readFile(filename, enc || 'utf8', function (err, res) {
             return err ? reject(err) : fulfill(res);
         });
     });
-};
+});
 
 /**
  * 写入文件
@@ -502,13 +542,13 @@ lib.readFile = function (filename, enc) {
  * @param {*} data
  * @returns {*}
  */
-lib.writeFile = function (filename, data) {
+define(lib, 'writeFile', function (filename, data) {
     return new Promise(function (fulfill, reject) {
         fs.writeFile(filename, data, function (err, res) {
             return err ? reject(err) : fulfill(res);
         });
     });
-};
+});
 
 /**
  * 修改文件名
@@ -517,13 +557,13 @@ lib.writeFile = function (filename, data) {
  * @param {string} nfilename
  * @returns {*}
  */
-lib.reFile = function (filename, nfilename) {
+define(lib, 'reFile', function (filename, nfilename) {
     return new Promise(function (fulfill, reject) {
         fs.rename(filename, nfilename, function (err) {
             return err ? reject(err) : fulfill();
         });
     });
-};
+});
 
 /**
  * 删除文件
@@ -531,14 +571,14 @@ lib.reFile = function (filename, nfilename) {
  * @param {any} p 
  * @returns 
  */
-lib.rmFile = function (p) {
-    let fn = function () {};
+define(lib, 'rmFile', function (p) {
+    let fn = function () { };
     if (lib.isFile(p)) {
         fs.unlinkSync(p, fn);
         return true;
     }
     return false;
-};
+});
 
 /**
  * 递归创建目录
@@ -547,7 +587,7 @@ lib.rmFile = function (p) {
  * @param {string} mode
  * @returns {*}
  */
-lib.mkDir = function (p, mode) {
+define(lib, 'mkDir', function (p, mode) {
     mode = mode || '0777';
     if (fs.existsSync(p)) {
         fs.chmodSync(p, mode);
@@ -561,7 +601,7 @@ lib.mkDir = function (p, mode) {
         lib.mkDir(p, mode);
     }
     return true;
-};
+});
 
 /**
  * 递归读取目录
@@ -572,7 +612,7 @@ lib.mkDir = function (p, mode) {
  * @param {any} prefix 
  * @returns 
  */
-lib.readDir = function (p, filter, files, prefix) {
+define(lib, 'readDir', function (p, filter, files, prefix) {
     prefix = prefix || '';
     files = files || [];
     filter = filter || function (x) {
@@ -591,7 +631,7 @@ lib.readDir = function (p, filter, files, prefix) {
         files.push(prefix);
     }
     return files;
-};
+});
 
 /**
  * 递归的删除目录
@@ -601,7 +641,7 @@ lib.readDir = function (p, filter, files, prefix) {
  * @param {boolean} reserve
  * @returns {*}
  */
-lib.rmDir = function (p, reserve) {
+define(lib, 'rmDir', function (p, reserve) {
     if (!lib.isDir) {
         return Promise.resolve(null);
     }
@@ -643,7 +683,7 @@ lib.rmDir = function (p, reserve) {
         });
     });
     return deferred.promise;
-};
+});
 
 /**
  * 
@@ -651,9 +691,9 @@ lib.rmDir = function (p, reserve) {
  * @param {*} obj
  * @returns {boolean}
  */
-lib.isPromise = function (obj) {
+define(lib, 'isPromise', function (obj) {
     return !!(obj && obj.catch && typeof obj.then === 'function');
-};
+});
 
 /**
  * 将callback风格的函数转换为Promise
@@ -662,7 +702,7 @@ lib.isPromise = function (obj) {
  * @param {object} receiver
  * @returns {*}
  */
-lib.promisify = function (fn, receiver) {
+define(lib, 'promisify', function (fn, receiver) {
     return function (...args) {
         return new Promise(function (resolve, reject) {
             fn.apply(receiver, [...args, function (err, res) {
@@ -670,7 +710,7 @@ lib.promisify = function (fn, receiver) {
             }]);
         });
     };
-};
+});
 
 /**
  * 
@@ -678,9 +718,9 @@ lib.promisify = function (fn, receiver) {
  * @param {any} obj 
  * @returns 
  */
-lib.isGenerator = function (obj) {
+define(lib, 'isGenerator', function (obj) {
     return !!(obj && typeof obj === 'function' && obj.constructor && obj.constructor.name === 'GeneratorFunction');
-};
+});
 
 /**
  * 将generator函数通过co转换为promise
@@ -688,7 +728,7 @@ lib.isGenerator = function (obj) {
  * @param {any} instance 
  * @param {any} method 
  */
-lib.generatorToPromise = function (instance, method) {
+define(lib, 'generatorToPromise', function (instance, method) {
     let cls = instance;
     if (method) {
         cls = instance[method];
@@ -697,21 +737,21 @@ lib.generatorToPromise = function (instance, method) {
         return co.wrap(cls).bind(cls);
     }
     return cls.bind(cls);
-};
+});
 
 /**
  * 生成一个defer对象
  * 
  * @returns {*} 
  */
-lib.getDefer = function () {
+define(lib, 'getDefer', function () {
     let defer = {};
     defer.promise = new Promise(function (resolve, reject) {
         defer.resolve = resolve;
         defer.reject = reject;
     });
     return defer;
-};
+});
 
 /**
  * 加载文件
@@ -719,7 +759,7 @@ lib.getDefer = function () {
  * @param {string} file
  * @returns {*}
  */
-lib.require = function (file) {
+define(lib, 'require', function (file) {
     try {
         let obj = require(file);
         obj = (obj && obj.__esModule && obj.default) ? obj.default : obj;
@@ -730,7 +770,7 @@ lib.require = function (file) {
     } catch (e) {
         return null;
     }
-};
+});
 
 /**
  * 克隆
@@ -739,13 +779,13 @@ lib.require = function (file) {
  * @param {any} deep 
  * @returns 
  */
-lib.clone = function (source, deep) {
+define(lib, 'clone', function (source, deep) {
     if (deep) {
         return lodash.cloneDeep(source);
     } else {
         return lodash.clone(source);
     }
-};
+});
 
 /**
  * 继承
@@ -755,24 +795,12 @@ lib.clone = function (source, deep) {
  * @param {any} deep 
  * @returns 
  */
-lib.extend = function (source, target, deep) {
+define(lib, 'extend', function (source, target, deep) {
     if (deep) {
         return lodash.merge(lodash.cloneDeep(source), target);
     } else {
         return lodash.assignIn(source, target);
     }
-};
-
-/**
- * v8引擎优化
- *
- * @param {object} obj
- */
-lib.toFastProperties = function (obj) {
-    let f = function f() { };
-    f.prototype = obj;
-    /*eslint-disable no-new*/
-    new f();
-};
+});
 
 module.exports = lib;
