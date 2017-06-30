@@ -725,18 +725,17 @@ define(lib, 'isGenerator', function (obj) {
 /**
  * 将generator函数通过co转换为promise
  * 
- * @param {any} instance 
- * @param {any} method 
+ * @param {Function} fn 
  */
-define(lib, 'generatorToPromise', function (instance, method) {
-    let cls = instance;
-    if (method) {
-        cls = instance[method];
+define(lib, 'generatorToPromise', function (fn) {
+    if (typeof fn !== 'function') {
+        throw Error('fn is not a function');
     }
-    if (this.isGenerator(cls)) {
-        return co.wrap(cls).bind(cls);
+    if (!lib.isGenerator(fn)) {
+        // assume it's Promise-based
+        return fn;
     }
-    return cls.bind(cls);
+    return co.wrap(fn);
 });
 
 /**
@@ -768,7 +767,7 @@ define(lib, 'require', function (file) {
         }
         return obj;
     } catch (e) {
-        return null;
+        throw Error(e);
     }
 });
 
