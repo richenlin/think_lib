@@ -164,10 +164,11 @@ define(lib, 'isEmpty', function (obj) {
     } else if (lib.isArray(obj)) {
         return obj.length === 0;
     } else if (lib.isObject(obj)) {
-        for (let key in obj) {
-            return !key && !0;
-        }
-        return true;
+        // for (let key in obj) {
+        //     return !key && !0;
+        // }
+        // return true;
+        return Object.keys(obj).length === 0;
     }
     return false;
 });
@@ -736,6 +737,21 @@ define(lib, 'generatorToPromise', function (fn) {
         return fn;
     }
     return co.wrap(fn);
+});
+
+/**
+ * 执行等待，避免一个耗时的操作多次被执行。 callback 需要返回一个 Promise 。
+ * @param  {String}   key      []
+ * @param  {Function} callback []
+ * @return {Promise}            []
+ */
+var _awaitInstances;
+define(lib, 'await', function (key, callback) {
+    if (!_awaitInstances) {
+        const awaitjs = require('./lib/await.js');
+        _awaitInstances = new awaitjs();
+    }
+    return _awaitInstances.run(key, callback);
 });
 
 /**
