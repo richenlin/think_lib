@@ -1,6 +1,6 @@
 {
   "name": "think_lib",
-  "version": "1.0.12",
+  "version": "1.0.13",
   "description": "ThinkNode and ThinkKoa functions Lib.",
   "main": "index.js",
   "scripts": {
