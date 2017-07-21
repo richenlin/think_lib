@@ -740,21 +740,6 @@ define(lib, 'generatorToPromise', function (fn) {
 });
 
 /**
- * 执行等待，避免一个耗时的操作多次被执行。 callback 需要返回一个 Promise 。
- * @param  {String}   key      []
- * @param  {Function} callback []
- * @return {Promise}            []
- */
-var _awaitInstances;
-define(lib, 'await', function (key, callback) {
-    if (!_awaitInstances) {
-        const awaitjs = require('./lib/await.js');
-        _awaitInstances = new awaitjs();
-    }
-    return _awaitInstances.run(key, callback);
-});
-
-/**
  * 生成一个defer对象
  * 
  * @returns {*} 
