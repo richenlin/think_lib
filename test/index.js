@@ -108,4 +108,15 @@ describe('think_lib', function (){
         temp2.aa.qq = 33333;
         assert(data.aa.qq, 33333);
     });
+    it('hasOwn', function(){
+        let data = {};
+        data.test = 1;
+        assert(lib.hasOwn(data, 'test'), true);
+        let data2 = Object.create({});
+        data2.test = 2;
+        assert(lib.hasOwn(data2, 'test'), true);
+        let data3 = Object.create(null);
+        data3.test = 3;
+        assert(lib.hasOwn(data3, 'test'), true);
+    });
 });

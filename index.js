@@ -693,8 +693,7 @@ define(lib, 'rmDir', function (p, reserve) {
  * @param {any} property 
  */
 define(lib, 'hasOwn', function(obj, property) {
-    const hasOwn = Object.prototype.hasOwnproperty;
-    return hasOwn.call(obj, property);
+    return Object.prototype.hasOwnProperty.call(obj, property);
 });
 
 /**
