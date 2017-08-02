@@ -762,6 +762,7 @@ define(lib, 'getDefer', function () {
     });
     return defer;
 });
+define(lib, 'defer', lib.getDefer);
 
 /**
  * 加载文件
