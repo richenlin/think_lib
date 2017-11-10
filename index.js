@@ -12,19 +12,32 @@ const path = require('path');
 const net = require('net');
 const crypto = require('crypto');
 const lodash = require('lodash');
+/**
+ * console.log 封装
+ * 
+ * @param {any} str 
+ * @returns {void}
+ */
+global.echo = function (str) {
+    let date = datetime('', '');
+    console.log('----------' + date + '----------');
+    console.log(str);
+    console.log('----------' + date + '----------');
+};
 
+/*eslint-disable func-style */
 /**
  * v8引擎优化
- *
- * @param {object} obj
+ * 
+ * @param {any} obj 
+ * @returns {void}
  */
-const toFastProperties = function (obj) {
+function toFastProperties(obj) {
     let f = function f() { };
     f.prototype = obj;
     /*eslint-disable no-new*/
     new f();
-};
-
+}
 /**
  * Object.defineProperty
  * 
@@ -32,9 +45,9 @@ const toFastProperties = function (obj) {
  * @param {any} property 
  * @param {any} value 
  * @param {boolean} [setter=false] 
- * @returns 
+ * @returns {void}
  */
-const define = function (obj, property, value, setter = false) {
+function define(obj, property, value, setter = false) {
     if (setter) {
         return Object.defineProperty(obj, property, {
             value: value,
@@ -51,68 +64,27 @@ const define = function (obj, property, value, setter = false) {
             enumerable: true
         });
     }
-};
-
-/**
- * console.log 封装
- * @param str
- */
-global.echo = function (str) {
-    let date = lib.datetime('', '');
-    console.log('----------' + date + '----------');
-    console.log(str);
-    console.log('----------' + date + '----------');
-};
-
-var lib = {};
-
-define(lib, 'toFastProperties', toFastProperties);
-define(lib, 'define', define);
-define(lib, 'sep', path.sep);
-define(lib, 'eq', lodash.eq);
-define(lib, 'gt', lodash.gt);
-define(lib, 'gte', lodash.gte);
-define(lib, 'lt', lodash.lt);
-define(lib, 'lte', lodash.lte);
-define(lib, 'isArray', lodash.isArray);
-define(lib, 'isBoolean', lodash.isBoolean);
-define(lib, 'isBuffer', lodash.isBuffer);
-define(lib, 'isDate', lodash.isDate);
-define(lib, 'isEqual', lodash.isEqual);
-define(lib, 'isError', lodash.isError);
-define(lib, 'isFunction', lodash.isFunction);
-define(lib, 'isIP', net.isIP);
-define(lib, 'isMap', lodash.isMap);
-define(lib, 'isNull', lodash.isNull);
-define(lib, 'isNaN', lodash.isNaN);
-define(lib, 'isUndefined', lodash.isUndefined);
-define(lib, 'isNumber', lodash.isNumber);
-define(lib, 'isObject', lodash.isPlainObject); //lodash中isObject把Array也返回true,因此使用isPlainObject
-define(lib, 'isRegexp', lodash.isRegExp);
-define(lib, 'isSet', lodash.isSet);
-define(lib, 'isString', lodash.isString);
-define(lib, 'isSymbol', lodash.isSymbol);
-
+}
 
 /**
  * 是否是仅包含数字的字符串
- *
- * @param {*} obj
+ * 
+ * @param {any} obj 
  * @returns {boolean}
  */
-define(lib, 'isNumberString', function (obj) {
+function isNumberString(obj) {
     let numberReg = /^((\-?\d*\.?\d*(?:e[+-]?\d*(?:\d?\.?|\.?\d?)\d*)?)|(0[0-7]+)|(0x[0-9a-f]+))$/i;
     return numberReg.test(obj);
-});
+}
 /**
  * 是否是标准JSON对象
- * 必须是对象或数组
- * @param {*} obj
+ * 必须是标准对象或数组
+ * @param {any} obj 
  * @returns {boolean}
  */
-define(lib, 'isJSONObj', function (obj) {
-    return lib.isObject(obj) || lib.isArray(obj);
-});
+function isJSONObj(obj) {
+    return lodash.isPlainObject(obj) || lodash.isArray(obj);
+}
 
 /**
  * 是否是标准的JSON字符串
@@ -120,50 +92,50 @@ define(lib, 'isJSONObj', function (obj) {
  * @param {*} obj
  * @returns {boolean}
  */
-define(lib, 'isJSONStr', function (obj) {
-    if (!lib.isString(obj)) {
+function isJSONStr(obj) {
+    if (!lodash.isString(obj)) {
         return false;
     }
     try {
-        return lib.isJSONObj(JSON.parse(obj));
+        return isJSONObj(JSON.parse(obj));
     } catch (e) {
         return false;
     }
-});
+}
 
 /**
  * 检查对象是否为空
  * 不考虑空对象、数组
- * @param {*} obj
+ * @param {any} obj
  * @returns {boolean}
  */
-define(lib, 'isTrueEmpty', function (obj) {
+function isTrueEmpty(obj) {
     if (obj === undefined || obj === null || obj === '') {
         return true;
     }
-    if (lib.isNumber(obj)) {
+    if (lodash.isNumber(obj)) {
         return isNaN(obj);
     }
     return false;
-});
+}
 
 /**
  * 检查对象是否为空
  * undefined,null,'',NaN,[],{}和任何空白字符，包括空格、制表符、换页符等等，均返回true
- * @param {*} obj
+ * @param {any} obj
  * @returns {boolean}
  */
-define(lib, 'isEmpty', function (obj) {
+function isEmpty(obj) {
     if (obj === undefined || obj === null || obj === '') {
         return true;
-    } else if (lib.isString(obj)) {
+    } else if (lodash.isString(obj)) {
         //\s 匹配任何空白字符，包括空格、制表符、换页符等等。等价于 [ \f\n\r\t\v]。
         return obj.replace(/(^\s*)|(\s*$)/g, '').length === 0;
-    } else if (lib.isNumber(obj)) {
+    } else if (lodash.isNumber(obj)) {
         return isNaN(obj);
-    } else if (lib.isArray(obj)) {
+    } else if (lodash.isArray(obj)) {
         return obj.length === 0;
-    } else if (lib.isObject(obj)) {
+    } else if (lodash.isPlainObject(obj)) {
         // for (let key in obj) {
         //     return !key && !0;
         // }
@@ -171,80 +143,80 @@ define(lib, 'isEmpty', function (obj) {
         return Object.keys(obj).length === 0;
     }
     return false;
-});
+}
 
 /**
  * 强制转换为字符串
  * 跟.toString不同的是可以转换undefined和null
- * @param {*} obj
+ * @param {any} obj
  * @returns {string}
  */
-define(lib, 'toString', function (obj) {
+function toString(obj) {
     if (obj === undefined || obj === null) {
         return '';
     }
     return lodash.toString(obj);
-});
+}
 
 /**
  * 强制转换为整型
  *
- * @param {*} obj
+ * @param {any} obj
  * @returns {number}
  */
-define(lib, 'toInt', function (obj) {
-    return isNaN(obj) ? 0 : lodash.toInteger(obj);
-});
+function toInt(obj) {
+    return lodash.toInteger(obj);
+}
 
 /**
  * 强制转换为浮点型
  *
- * @param {*} obj
+ * @param {any} obj
  * @returns {number}
  */
-define(lib, 'toFloat', function (obj) {
-    return isNaN(obj) ? 0 : parseFloat(obj);
-});
+function toFloat(obj) {
+    return lodash.toFloat(obj);
+}
 
 /**
  * 强制转换为数值
  *
- * @param {*} obj
+ * @param {any} obj
  * @returns {number}
  */
-define(lib, 'toNumber', function (obj) {
-    return isNaN(obj) ? 0 : lodash.toNumber(obj);
-});
+function toNumber(obj) {
+    return lodash.toNumber(obj);
+}
 
 /**
  * 强制转换为布尔值
  *
- * @param {*} obj
+ * @param {any} obj
  * @returns {boolean}
  */
-define(lib, 'toBoolean', function (obj) {
-    return Boolean(obj);
-});
+function toBoolean(obj) {
+    return lodash.toBoolean(obj);
+}
 
 /**
  * 强制转换为数组
  *
- * @param {*} obj
- * @returns {boolean}
+ * @param {any} obj
+ * @returns {array}
  */
-define(lib, 'toArray', function (obj) {
+function toArray(obj) {
     return lodash.toArray(obj);
-});
+}
 
 /**
  * 强制转换为对象
  *
- * @param {*} obj
- * @returns {boolean}
+ * @param {any} obj
+ * @returns {object}
  */
-define(lib, 'toObject', function (obj) {
+function toObject(obj) {
     return lodash.toPlainObject(obj);
-});
+}
 
 /**
  * 字符转义实体
@@ -252,7 +224,7 @@ define(lib, 'toObject', function (obj) {
  * @param {string} str
  * @returns {string}
  */
-define(lib, 'escapeHtml', function (str) {
+function escapeHtml(str) {
     let htmlMaps = {
         '<': '&lt;',
         '>': '&gt;',
@@ -262,7 +234,7 @@ define(lib, 'escapeHtml', function (str) {
     return (str + '').replace(/[<>'"]/g, function (a) {
         return htmlMaps[a];
     });
-});
+}
 
 /**
  * 实体转义字符
@@ -270,7 +242,7 @@ define(lib, 'escapeHtml', function (str) {
  * @param {string} str
  * @returns {string}
  */
-define(lib, 'escapeSpecial', function (str) {
+function escapeSpecial(str) {
     let specialMaps = {
         '&lt;': '<',
         '&gt;': '>',
@@ -281,7 +253,7 @@ define(lib, 'escapeSpecial', function (str) {
         str = str.replace(new RegExp(n, 'g'), specialMaps[n]);
     }
     return str;
-});
+}
 
 /**
  * 大写首字符
@@ -289,10 +261,10 @@ define(lib, 'escapeSpecial', function (str) {
  * @param {string} name 
  * @returns {string} 
  */
-define(lib, 'ucFirst', function (name) {
+function ucFirst(name) {
     name = (name || '') + '';
     return name.slice(0, 1).toUpperCase() + name.slice(1).toLowerCase();
-});
+}
 
 /**
  * md5
@@ -300,11 +272,11 @@ define(lib, 'ucFirst', function (name) {
  * @param {string} str
  * @returns {string}
  */
-define(lib, 'md5', function (str) {
+function md5(str) {
     let ins = crypto.createHash('md5');
     ins.update(str + '', 'utf8');
     return ins.digest('hex');
-});
+}
 
 /**
  * rand
@@ -313,9 +285,9 @@ define(lib, 'md5', function (str) {
  * @param {number} max
  * @returns {number}
  */
-define(lib, 'rand', function (min, max) {
+function rand(min, max) {
     return Math.floor(min + Math.random() * (max - min + 1));
-});
+}
 
 /**
  * AES字符串加密
@@ -324,7 +296,7 @@ define(lib, 'rand', function (min, max) {
  * @param {string} key 密钥 (必须为16位字符串)
  * @returns {string}
  */
-define(lib, 'encryption', function (data, key) {
+function encryption(data, key) {
     try {
         let iv = '0000000000000000';
         // let clearEncoding = 'utf8';
@@ -338,7 +310,7 @@ define(lib, 'encryption', function (data, key) {
     } catch (e) {
         return '';
     }
-});
+}
 
 /**
  * AES字符串解密
@@ -347,7 +319,7 @@ define(lib, 'encryption', function (data, key) {
  * @param {string} key 密钥 (必须为16位字符串)
  * @returns {string}
  */
-define(lib, 'decryption', function (data, key) {
+function decryption(data, key) {
     try {
         let iv = '0000000000000000';
         // let clearEncoding = 'utf8';
@@ -361,21 +333,21 @@ define(lib, 'decryption', function (data, key) {
     } catch (e) {
         return '';
     }
-});
+}
 
 /**
  * 日期时间戳及格式化
  *
  * @param {any} date
  * @param {any} format
- * @returns
+ * @returns {string | number}
  */
-define(lib, 'datetime', function (date, format) {
+function datetime(date, format) {
     if (format === undefined) {
         //datetime() => now timestamp
         if (date === undefined) {
             return Math.floor(Date.now() / 1000);
-        } else if (lib.isString(date)) { //datetime('2017-01-01') => timestamp
+        } else if (lodash.isString(date)) { //datetime('2017-01-01') => timestamp
             date = date || new Date();
             return Math.floor(new Date(date).getTime() / 1000);
         }
@@ -397,26 +369,26 @@ define(lib, 'datetime', function (date, format) {
             f = f.replace(/ss|SS/, d.getSeconds() > 9 ? d.getSeconds().toString() : '0' + d.getSeconds());
             return f;
         };
-        if (date && lib.isNumber(date)) {
+        if (date && lodash.isNumber(date)) {
             let newDate = new Date();
             newDate.setTime(date * 1000);
             return fn(newDate, format);
         }
-        if (date && lib.isString(date)) {
+        if (date && lodash.isString(date)) {
             return fn(new Date(Date.parse(date)), format);
         }
         return fn(new Date(), format);
     }
-});
+}
 
 /**
  * 判断值是否为数组的元素
  * 非严格匹配
- * @param {*} value
+ * @param {any} value
  * @param {any[]} arr
  * @returns {boolean}
  */
-define(lib, 'inArray', function (value, arr) {
+function inArray(value, arr) {
     let len = arr.length;
     for (let i = 0; i < len; i++) {
         if (arr[i] == value) {
@@ -424,30 +396,30 @@ define(lib, 'inArray', function (value, arr) {
         }
     }
     return false;
-});
+}
 
 /**
  * 数组去重
  *
  * @param {any[]} arr
- * @returns {*}
+ * @returns {any[]}
  */
-define(lib, 'arrUnique', function (arr) {
+function arrUnique(arr) {
     return lodash.union(arr);
-});
+}
 
 /**
  * 数组删除元素
  * indexs为需要删除的下标数组
  * @param {any[]} arr
  * @param {any[]} indexs
- * @returns {*}
+ * @returns {any[]}
  */
-define(lib, 'arrRemove', function (arr, indexs) {
+function arrRemove(arr, indexs) {
     return lodash.remove(arr, function (n, i) {
         return i === indexs;
     });
-});
+}
 
 /**
  * 
@@ -455,7 +427,7 @@ define(lib, 'arrRemove', function (arr, indexs) {
  * @param {string} p
  * @returns {boolean}
  */
-define(lib, 'isFile', function (p) {
+function isFile(p) {
     if (!fs.existsSync(p)) {
         return false;
     }
@@ -465,7 +437,7 @@ define(lib, 'isFile', function (p) {
     } catch (e) {
         return false;
     }
-});
+}
 
 /**
  * 
@@ -473,7 +445,7 @@ define(lib, 'isFile', function (p) {
  * @param {string} p
  * @returns {boolean}
  */
-define(lib, 'isDir', function (p) {
+function isDir(p) {
     if (!fs.existsSync(p)) {
         return false;
     }
@@ -483,7 +455,7 @@ define(lib, 'isDir', function (p) {
     } catch (e) {
         return false;
     }
-});
+}
 
 /**
  * 判断一个文件或者目录是否可写
@@ -491,7 +463,7 @@ define(lib, 'isDir', function (p) {
  * @param {string} p
  * @returns {boolean}
  */
-define(lib, 'isWritable', function (p) {
+function isWritable(p) {
     if (!fs.existsSync(p)) {
         return false;
     }
@@ -504,7 +476,7 @@ define(lib, 'isWritable', function (p) {
     return !!(owner && (mode & parseInt('00200', 8)) ||
         group && (mode & parseInt('00020', 8)) ||
         (mode & parseInt('00002', 8)));
-});
+}
 
 /**
  * 修改目录或者文件权限
@@ -513,43 +485,43 @@ define(lib, 'isWritable', function (p) {
  * @param {string} mode
  * @returns {*}
  */
-define(lib, 'chmod', function (p, mode) {
+function chmod(p, mode) {
     mode = mode || '0777';
     if (!fs.existsSync(p)) {
         return true;
     }
     return fs.chmodSync(p, mode);
-});
+}
 
 /**
  * 读取文件
  * 返回Promise
  * @param {string} filename 文件物理路径
- * @param {*} enc 为空返回Buffer类型,'utf8'返回String类型
+ * @param {undefined | string} enc 为空返回Buffer类型,'utf8'返回String类型
  * @returns {*}
  */
-define(lib, 'readFile', function (filename, enc) {
+function readFile(filename, enc) {
     return new Promise(function (fulfill, reject) {
         fs.readFile(filename, enc || 'utf8', function (err, res) {
             return err ? reject(err) : fulfill(res);
         });
     });
-});
+}
 
 /**
  * 写入文件
  * 返回Promise
  * @param {string} filename
- * @param {*} data
+ * @param {string} data
  * @returns {*}
  */
-define(lib, 'writeFile', function (filename, data) {
+function writeFile(filename, data) {
     return new Promise(function (fulfill, reject) {
         fs.writeFile(filename, data, function (err, res) {
             return err ? reject(err) : fulfill(res);
         });
     });
-});
+}
 
 /**
  * 修改文件名
@@ -558,28 +530,28 @@ define(lib, 'writeFile', function (filename, data) {
  * @param {string} nfilename
  * @returns {*}
  */
-define(lib, 'reFile', function (filename, nfilename) {
+function reFile(filename, nfilename) {
     return new Promise(function (fulfill, reject) {
         fs.rename(filename, nfilename, function (err) {
             return err ? reject(err) : fulfill();
         });
     });
-});
+}
 
 /**
  * 删除文件
  * 同步模式
- * @param {any} p 
- * @returns 
+ * @param {string} p 
+ * @returns {boolean}
  */
-define(lib, 'rmFile', function (p) {
+function rmFile(p) {
     let fn = function () { };
-    if (lib.isFile(p)) {
+    if (isFile(p)) {
         fs.unlinkSync(p, fn);
         return true;
     }
     return false;
-});
+}
 
 /**
  * 递归创建目录
@@ -588,7 +560,7 @@ define(lib, 'rmFile', function (p) {
  * @param {string} mode
  * @returns {*}
  */
-define(lib, 'mkDir', function (p, mode) {
+function mkDir(p, mode) {
     mode = mode || '0777';
     if (fs.existsSync(p)) {
         fs.chmodSync(p, mode);
@@ -598,11 +570,11 @@ define(lib, 'mkDir', function (p, mode) {
     if (fs.existsSync(pp)) {
         fs.mkdirSync(p, mode);
     } else {
-        lib.mkDir(pp, mode);
-        lib.mkDir(p, mode);
+        mkDir(pp, mode);
+        mkDir(p, mode);
     }
     return true;
-});
+}
 
 /**
  * 递归读取目录
@@ -613,7 +585,7 @@ define(lib, 'mkDir', function (p, mode) {
  * @param {any} prefix 
  * @returns 
  */
-define(lib, 'readDir', function (p, filter, files, prefix) {
+function readDir(p, filter, files, prefix) {
     prefix = prefix || '';
     files = files || [];
     filter = filter || function (x) {
@@ -626,13 +598,13 @@ define(lib, 'readDir', function (p, filter, files, prefix) {
     }
     if (fs.statSync(dir).isDirectory()) {
         fs.readdirSync(dir).filter(filter).forEach(function (name) {
-            lib.readDir(p, filter, files, path.join(prefix, name));
+            readDir(p, filter, files, path.join(prefix, name));
         });
     } else {
         files.push(prefix);
     }
     return files;
-});
+}
 
 /**
  * 递归的删除目录
@@ -642,11 +614,11 @@ define(lib, 'readDir', function (p, filter, files, prefix) {
  * @param {boolean} reserve
  * @returns {*}
  */
-define(lib, 'rmDir', function (p, reserve) {
-    if (!lib.isDir) {
+function rmDir(p, reserve) {
+    if (!isDir(p)) {
         return Promise.resolve(null);
     }
-    let deferred = lib.getDefer();
+    let deferred = getDefer();
     fs.readdir(p, function (err, files) {
         if (err) {
             return deferred.reject(err);
@@ -655,10 +627,10 @@ define(lib, 'rmDir', function (p, reserve) {
         if (files.length > 0) {
             let promises = files.map(function (item) {
                 let filePath = path.normalize(`${p}${path.sep}${item}`);
-                if (lib.isDir(filePath)) {
-                    return lib.rmDir(filePath, false);
+                if (isDir(filePath)) {
+                    return rmDir(filePath, false);
                 } else {
-                    let defer = lib.getDefer();
+                    let defer = getDefer();
                     fs.unlink(filePath, function (er) {
                         return er ? defer.reject(er) : defer.resolve();
                     });
@@ -670,7 +642,7 @@ define(lib, 'rmDir', function (p, reserve) {
 
         return spromise.then(function () {
             if (!reserve) {
-                let deferr = lib.getDefer();
+                let deferr = getDefer();
                 fs.rmdir(p, function (e) {
                     return e ? deferr.reject(e) : deferr.resolve();
                 });
@@ -684,7 +656,7 @@ define(lib, 'rmDir', function (p, reserve) {
         });
     });
     return deferred.promise;
-});
+}
 
 /**
  * 
@@ -692,9 +664,9 @@ define(lib, 'rmDir', function (p, reserve) {
  * @param {any} obj 
  * @param {any} property 
  */
-define(lib, 'hasOwn', function(obj, property) {
+function hasOwn(obj, property) {
     return Object.prototype.hasOwnProperty.call(obj, property);
-});
+}
 
 /**
  * 
@@ -702,9 +674,9 @@ define(lib, 'hasOwn', function(obj, property) {
  * @param {*} obj
  * @returns {boolean}
  */
-define(lib, 'isPromise', function (obj) {
+function isPromise(obj) {
     return !!(obj && obj.catch && typeof obj.then === 'function');
-});
+}
 
 /**
  * 将callback风格的函数转换为Promise
@@ -713,7 +685,7 @@ define(lib, 'isPromise', function (obj) {
  * @param {object} receiver
  * @returns {*}
  */
-define(lib, 'promisify', function (fn, receiver) {
+function promisify(fn, receiver) {
     return function (...args) {
         return new Promise(function (resolve, reject) {
             fn.apply(receiver, [...args, function (err, res) {
@@ -721,48 +693,48 @@ define(lib, 'promisify', function (fn, receiver) {
             }]);
         });
     };
-});
+}
 
 /**
- * 
+ * 判断是否是generator函数
  * 
  * @param {any} obj 
  * @returns 
  */
-define(lib, 'isGenerator', function (obj) {
+function isGenerator(obj) {
     return !!(obj && typeof obj === 'function' && obj.constructor && obj.constructor.name === 'GeneratorFunction');
-});
+}
 
 /**
  * 将generator函数通过co转换为promise
  * 
  * @param {Function} fn 
  */
-define(lib, 'generatorToPromise', function (fn) {
+function generatorToPromise(fn) {
     if (typeof fn !== 'function') {
         throw Error('fn is not a function');
     }
-    if (!lib.isGenerator(fn)) {
+    if (!isGenerator(fn)) {
         // assume it's Promise-based
         return fn;
     }
     return co.wrap(fn);
-});
+}
 
 /**
  * 生成一个defer对象
  * 
  * @returns {*} 
  */
-define(lib, 'getDefer', function () {
+function getDefer() {
     let defer = {};
     defer.promise = new Promise(function (resolve, reject) {
         defer.resolve = resolve;
         defer.reject = reject;
     });
     return defer;
-});
-define(lib, 'defer', lib.getDefer);
+}
+// define(lib, 'defer', lib.getDefer);
 
 /**
  * 加载文件
@@ -770,18 +742,18 @@ define(lib, 'defer', lib.getDefer);
  * @param {string} file
  * @returns {*}
  */
-define(lib, 'require', function (file) {
+function thinkrequire(file) {
     try {
         let obj = require(file);
         obj = (obj && obj.__esModule && obj.default) ? obj.default : obj;
-        if (lib.isFunction(obj)) {
+        if (lodash.isFunction(obj)) {
             obj.prototype.__filename = file;
         }
         return obj;
     } catch (e) {
         throw Error(e);
     }
-});
+}
 
 /**
  * 克隆
@@ -790,13 +762,13 @@ define(lib, 'require', function (file) {
  * @param {any} deep 
  * @returns 
  */
-define(lib, 'clone', function (source, deep) {
+function clone(source, deep) {
     if (deep) {
         return lodash.cloneDeep(source);
     } else {
         return lodash.clone(source);
     }
-});
+}
 
 /**
  * 继承
@@ -806,12 +778,95 @@ define(lib, 'clone', function (source, deep) {
  * @param {any} deep 
  * @returns 
  */
-define(lib, 'extend', function (source, target, deep) {
+function extend(source, target, deep) {
     if (deep) {
         return lodash.merge(lodash.cloneDeep(source), target);
     } else {
         return lodash.assignIn(source, target);
     }
-});
+}
 
-module.exports = lib;
+module.exports = new Proxy({
+    sep: path.sep,
+    eq: lodash.eq,
+    gt: lodash.gt,
+    gte: lodash.gte,
+    lt: lodash.lt,
+    lte: lodash.lte,
+    isArray: lodash.isArray,
+    isBoolean: lodash.isBoolean,
+    isBuffer: lodash.isBuffer,
+    isDate: lodash.isDate,
+    isEqual: lodash.isEqual,
+    isError: lodash.isError,
+    isFunction: lodash.isFunction,
+    isIP: net.isIP,
+    isMap: lodash.isMap,
+    isNull: lodash.isNull,
+    isNaN: lodash.isNaN,
+    isUndefined: lodash.isUndefined,
+    isNumber: lodash.isNumber,
+    isObject: lodash.isPlainObject,
+    isRegexp: lodash.isRegexp,
+    isSet: lodash.isSet,
+    isString: lodash.isString,
+    isSymbol: lodash.isSymbol,
+    isNumberString: isNumberString,
+    isJSONObj: isJSONObj,
+    isJSONStr: isJSONStr,
+    isEmpty: isEmpty,
+    isTrueEmpty: isTrueEmpty,
+    toString: toString,
+    toInt: toInt,
+    toFloat: toFloat,
+    toNumber: toNumber,
+    toBoolean: toBoolean,
+    toArray: toArray,
+    toObject: toObject,
+    escapeHtml: escapeHtml,
+    escapeSpecial: escapeSpecial,
+    ucFirst: ucFirst,
+    md5: md5,
+    rand: rand,
+    encryption: encryption,
+    decryption: decryption,
+    datetime: datetime,
+    inArray: inArray,
+    arrUnique: arrUnique,
+    arrRemove: arrRemove,
+    isFile: isFile,
+    isDir: isDir,
+    isWritable: isWritable,
+    chmod: chmod,
+    readFile: readFile,
+    writeFile: writeFile,
+    reFile: reFile,
+    rmFile: rmFile,
+    mkDir: mkDir,
+    readDir: readDir,
+    rmDir: rmDir,
+    isPromise: isPromise,
+    promisify: promisify,
+    isGenerator: isGenerator,
+    generatorToPromise: generatorToPromise,
+    defer: getDefer,
+    getDefer: getDefer,
+    require: thinkrequire,
+    clone: clone,
+    extend: extend,
+    hasOwn: hasOwn,
+    define: define,
+    toFastProperties: toFastProperties,
+
+}, {
+    set: function (target, key, value, receiver) {
+        if (Reflect.get(target, key, receiver) === undefined) {
+            return Reflect.set(target, key, value, receiver);
+        } else {
+            throw Error('Cannot redefine getter-only property');
+        }
+    },
+    deleteProperty: function (target, key) {
+        throw Error('Cannot delete getter-only property');
+    }
+});

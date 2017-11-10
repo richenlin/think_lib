@@ -1,7 +1,7 @@
 {
   "name": "think_lib",
-  "version": "1.0.13",
-  "description": "ThinkNode and ThinkKoa functions Lib.",
+  "version": "1.1.0",
+  "description": "ThinkKoa functions Libs.",
   "main": "index.js",
   "scripts": {
     "test": "npm run eslint && npm run test-cov",
@@ -29,6 +29,7 @@
     "mocha": "^3.4.2"
   },
   "dependencies": {
+    "co": "^4.6.0",
     "lodash": "^4.17.4"
   }
 }
