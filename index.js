@@ -786,6 +786,93 @@ function extend(source, target, deep) {
     }
 }
 
+// let pops = {
+//         sep: path.sep,
+//         eq: lodash.eq,
+//         gt: lodash.gt,
+//         gte: lodash.gte,
+//         lt: lodash.lt,
+//         lte: lodash.lte,
+//         isArray: lodash.isArray,
+//         isBoolean: lodash.isBoolean,
+//         isBuffer: lodash.isBuffer,
+//         isDate: lodash.isDate,
+//         isEqual: lodash.isEqual,
+//         isError: lodash.isError,
+//         isFunction: lodash.isFunction,
+//         isIP: net.isIP,
+//         isMap: lodash.isMap,
+//         isNull: lodash.isNull,
+//         isNaN: lodash.isNaN,
+//         isUndefined: lodash.isUndefined,
+//         isNumber: lodash.isNumber,
+//         isObject: lodash.isPlainObject,
+//         isRegExp: lodash.isRegExp,
+//         isRegexp: lodash.isRegExp,
+//         isSet: lodash.isSet,
+//         isString: lodash.isString,
+//         isSymbol: lodash.isSymbol,
+//         isNumberString: isNumberString,
+//         isJSONObj: isJSONObj,
+//         isJSONStr: isJSONStr,
+//         isEmpty: isEmpty,
+//         isTrueEmpty: isTrueEmpty,
+//         toString: toString,
+//         toInt: toInt,
+//         toFloat: toFloat,
+//         toNumber: toNumber,
+//         toBoolean: toBoolean,
+//         toArray: toArray,
+//         toObject: toObject,
+//         escapeHtml: escapeHtml,
+//         escapeSpecial: escapeSpecial,
+//         ucFirst: ucFirst,
+//         md5: md5,
+//         rand: rand,
+//         encryption: encryption,
+//         decryption: decryption,
+//         datetime: datetime,
+//         inArray: inArray,
+//         arrUnique: arrUnique,
+//         arrRemove: arrRemove,
+//         isFile: isFile,
+//         isDir: isDir,
+//         isWritable: isWritable,
+//         chmod: chmod,
+//         readFile: readFile,
+//         writeFile: writeFile,
+//         reFile: reFile,
+//         rmFile: rmFile,
+//         mkDir: mkDir,
+//         readDir: readDir,
+//         rmDir: rmDir,
+//         isPromise: isPromise,
+//         promisify: promisify,
+//         isGenerator: isGenerator,
+//         generatorToPromise: generatorToPromise,
+//         defer: getDefer,
+//         getDefer: getDefer,
+//         require: thinkrequire,
+//         clone: clone,
+//         extend: extend,
+//         hasOwn: hasOwn,
+//         define: define,
+//         toFastProperties: toFastProperties,
+
+//     }, lib = {};
+
+// for (let n in pops) {
+//     Object.defineProperty(lib, n, {
+//         enumerable: true,
+//         configurable: false,
+//         get: function () {
+//             return pops[n];
+//         }
+//     });
+// }
+
+// module.exports = lib;
+
 module.exports = new Proxy({
     sep: path.sep,
     eq: lodash.eq,
