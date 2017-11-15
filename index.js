@@ -807,6 +807,7 @@ module.exports = new Proxy({
     isUndefined: lodash.isUndefined,
     isNumber: lodash.isNumber,
     isObject: lodash.isPlainObject,
+    isRegExp: lodash.isRegExp,
     isRegexp: lodash.isRegExp,
     isSet: lodash.isSet,
     isString: lodash.isString,
