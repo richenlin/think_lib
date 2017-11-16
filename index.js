@@ -792,7 +792,7 @@ function extend(source, target, deep) {
 
 // module.exports = lib;
 
-const lib = new Proxy({
+module.exports = new Proxy({
     sep: path.sep,
     eq: lodash.eq,
     gt: lodash.gt,

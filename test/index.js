@@ -13,6 +13,7 @@ const assert = require('assert');
 const lib = require('../index');
 
 
+
 describe('think_lib', function (){
     before( function (){});
     it('sep', function(){
