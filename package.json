@@ -10,7 +10,7 @@
     "eslint": "eslint index.js"
   },
   "engines": {
-    "node": ">6.0.0"
+    "node": ">8.0.0"
   },
   "author": {
     "name": "richenlin",
@@ -18,12 +18,10 @@
   },
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/richenlin/think_lib/issues"
+    "url": "https://github.com/thinkkoa/think_lib/issues"
   },
-  "homepage": "https://github.com/richenlin/think_lib",
+  "homepage": "https://github.com/thinkkoa/think_lib",
   "devDependencies": {
-    "babel-core": "^6.24.1",
-    "babel-eslint": "^7.2.3",
     "eslint": "^3.19.0",
     "istanbul": "^0.4.5",
     "mocha": "^3.4.2"

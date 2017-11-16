@@ -12,6 +12,7 @@ const path = require('path');
 const net = require('net');
 const crypto = require('crypto');
 const lodash = require('lodash');
+
 /**
  * console.log 封装
  * 
@@ -27,7 +28,7 @@ global.echo = function (str) {
 
 /*eslint-disable func-style */
 /**
- * v8引擎优化
+ * 将对象 obj 进行原型实例转换,以整理该对象存储的数据结构,在v8引擎下访问此对象会更快
  * 
  * @param {any} obj 
  * @returns {void}
@@ -39,8 +40,8 @@ function toFastProperties(obj) {
     new f();
 }
 /**
- * Object.defineProperty
- * 
+ * Object.defineProperty的封装
+ * 当 setter 为false时属性 property 为getter
  * @param {any} obj 
  * @param {any} property 
  * @param {any} value 
@@ -67,182 +68,109 @@ function define(obj, property, value, setter = false) {
 }
 
 /**
- * 是否是仅包含数字的字符串
+ * 检查 value 是否是仅包含数字的字符串
  * 
- * @param {any} obj 
+ * @param {any} value 
  * @returns {boolean}
  */
-function isNumberString(obj) {
+function isNumberString(value) {
     let numberReg = /^((\-?\d*\.?\d*(?:e[+-]?\d*(?:\d?\.?|\.?\d?)\d*)?)|(0[0-7]+)|(0x[0-9a-f]+))$/i;
-    return numberReg.test(obj);
+    return numberReg.test(value);
 }
 /**
- * 是否是标准JSON对象
+ * 检查 value 是否是标准JSON对象
  * 必须是标准对象或数组
- * @param {any} obj 
+ * @param {any} value 
  * @returns {boolean}
  */
-function isJSONObj(obj) {
-    return lodash.isPlainObject(obj) || lodash.isArray(obj);
+function isJSONObj(value) {
+    return lodash.isPlainObject(value) || lodash.isArray(value);
 }
 
 /**
- * 是否是标准的JSON字符串
- * 必须是字符串，且可以被反解为对象或数组
- * @param {*} obj
+ * 检查 value 是否是标准的JSON字符串
+ * 必须是字符串，且可以被反序列化为对象或数组
+ * @param {any} value
  * @returns {boolean}
  */
-function isJSONStr(obj) {
-    if (!lodash.isString(obj)) {
+function isJSONStr(value) {
+    if (!lodash.isString(value)) {
         return false;
     }
     try {
-        return isJSONObj(JSON.parse(obj));
+        return isJSONObj(JSON.parse(value));
     } catch (e) {
         return false;
     }
 }
 
 /**
- * 检查对象是否为空
- * 不考虑空对象、数组
- * @param {any} obj
+ * 检查 value 是否为空
+ * 不考虑空对象、空数组、空格、制表符、换页符等
+ * @param {any} value
  * @returns {boolean}
  */
-function isTrueEmpty(obj) {
-    if (obj === undefined || obj === null || obj === '') {
+function isTrueEmpty(value) {
+    if (value === undefined || value === null || value === '') {
         return true;
     }
-    if (lodash.isNumber(obj)) {
-        return isNaN(obj);
+    if (lodash.isNumber(value)) {
+        return isNaN(value);
     }
     return false;
 }
 
 /**
- * 检查对象是否为空
+ * 检查 value 是否为空
  * undefined,null,'',NaN,[],{}和任何空白字符，包括空格、制表符、换页符等等，均返回true
- * @param {any} obj
+ * @param {any} value
  * @returns {boolean}
  */
-function isEmpty(obj) {
-    if (obj === undefined || obj === null || obj === '') {
+function isEmpty(value) {
+    if (value === undefined || value === null || value === '') {
         return true;
-    } else if (lodash.isString(obj)) {
+    } else if (lodash.isString(value)) {
         //\s 匹配任何空白字符，包括空格、制表符、换页符等等。等价于 [ \f\n\r\t\v]。
-        return obj.replace(/(^\s*)|(\s*$)/g, '').length === 0;
-    } else if (lodash.isNumber(obj)) {
-        return isNaN(obj);
-    } else if (lodash.isArray(obj)) {
-        return obj.length === 0;
-    } else if (lodash.isPlainObject(obj)) {
-        // for (let key in obj) {
+        return value.replace(/(^\s*)|(\s*$)/g, '').length === 0;
+    } else if (lodash.isNumber(value)) {
+        return isNaN(value);
+    } else if (lodash.isArray(value)) {
+        return value.length === 0;
+    } else if (lodash.isPlainObject(value)) {
+        // for (let key in value) {
         //     return !key && !0;
         // }
         // return true;
-        return Object.keys(obj).length === 0;
+        return Object.keys(value).length === 0;
     }
     return false;
 }
 
 /**
- * 强制转换为字符串
- * 跟.toString不同的是可以转换undefined和null
- * @param {any} obj
+ * 转换 value 中的特殊字符 > < " ' 为实体符
+ *
+ * @param {string} value
  * @returns {string}
  */
-function toString(obj) {
-    if (obj === undefined || obj === null) {
-        return '';
-    }
-    return lodash.toString(obj);
-}
-
-/**
- * 强制转换为整型
- *
- * @param {any} obj
- * @returns {number}
- */
-function toInt(obj) {
-    return lodash.toInteger(obj);
-}
-
-/**
- * 强制转换为浮点型
- *
- * @param {any} obj
- * @returns {number}
- */
-function toFloat(obj) {
-    return lodash.toFloat(obj);
-}
-
-/**
- * 强制转换为数值
- *
- * @param {any} obj
- * @returns {number}
- */
-function toNumber(obj) {
-    return lodash.toNumber(obj);
-}
-
-/**
- * 强制转换为布尔值
- *
- * @param {any} obj
- * @returns {boolean}
- */
-function toBoolean(obj) {
-    return lodash.toBoolean(obj);
-}
-
-/**
- * 强制转换为数组
- *
- * @param {any} obj
- * @returns {array}
- */
-function toArray(obj) {
-    return lodash.toArray(obj);
-}
-
-/**
- * 强制转换为对象
- *
- * @param {any} obj
- * @returns {object}
- */
-function toObject(obj) {
-    return lodash.toPlainObject(obj);
-}
-
-/**
- * 字符转义实体
- *
- * @param {string} str
- * @returns {string}
- */
-function escapeHtml(str) {
+function escapeHtml(value) {
     let htmlMaps = {
         '<': '&lt;',
         '>': '&gt;',
         '"': '&quote;',
         '\'': '&#39;'
     };
-    return (str + '').replace(/[<>'"]/g, function (a) {
+    return (value + '').replace(/[<>'"]/g, function (a) {
         return htmlMaps[a];
     });
 }
 
 /**
- * 实体转义字符
+ * 转换 value 中的实体符还原为 > < " '
  *
- * @param {string} str
+ * @param {string} value
  * @returns {string}
  */
-function escapeSpecial(str) {
+function escapeSpecial(value) {
     let specialMaps = {
         '&lt;': '<',
         '&gt;': '>',
@@ -250,36 +178,36 @@ function escapeSpecial(str) {
         '&#39;': '\''
     };
     for (let n in specialMaps) {
-        str = str.replace(new RegExp(n, 'g'), specialMaps[n]);
+        value = value.replace(new RegExp(n, 'g'), specialMaps[n]);
     }
-    return str;
+    return value;
 }
 
 /**
- * 大写首字符
+ * 转换 value 中的首字母为大写
  * 
- * @param {string} name 
+ * @param {string} value 
  * @returns {string} 
  */
-function ucFirst(name) {
-    name = (name || '') + '';
-    return name.slice(0, 1).toUpperCase() + name.slice(1).toLowerCase();
+function ucFirst(value) {
+    value = lodash.toString(value || '');
+    return value.slice(0, 1).toUpperCase() + value.slice(1).toLowerCase();
 }
 
 /**
- * md5
+ * 计算 value 的MD5散列值
  *
- * @param {string} str
+ * @param {string} value
  * @returns {string}
  */
-function md5(str) {
+function md5(value) {
     let ins = crypto.createHash('md5');
-    ins.update(str + '', 'utf8');
+    ins.update(value + '', 'utf8');
     return ins.digest('hex');
 }
 
 /**
- * rand
+ * 伪随机获取min和max范围内的整数
  *
  * @param {number} min
  * @param {number} max
@@ -290,7 +218,7 @@ function rand(min, max) {
 }
 
 /**
- * AES字符串加密
+ * 将字符串data进行AES加密
  *
  * @param {string} data 需要加密的字符串
  * @param {string} key 密钥 (必须为16位字符串)
@@ -313,7 +241,7 @@ function encryption(data, key) {
 }
 
 /**
- * AES字符串解密
+ * 将AES加密的字符串data进行解密
  *
  * @param {string} data 需要解密的字符串
  * @param {string} key 密钥 (必须为16位字符串)
@@ -382,8 +310,8 @@ function datetime(date, format) {
 }
 
 /**
- * 判断值是否为数组的元素
- * 非严格匹配
+ * 判断 value 是否为数组 arr 的元素
+ * 仅判断 value 值同元素值相等,不判断类型
  * @param {any} value
  * @param {any[]} arr
  * @returns {boolean}
@@ -399,30 +327,20 @@ function inArray(value, arr) {
 }
 
 /**
- * 数组去重
- *
+ * 将数组 arr 中指定下标 index 元素移除
+ * 
  * @param {any[]} arr
+ * @param {any[]} index
  * @returns {any[]}
  */
-function arrUnique(arr) {
-    return lodash.union(arr);
-}
-
-/**
- * 数组删除元素
- * indexs为需要删除的下标数组
- * @param {any[]} arr
- * @param {any[]} indexs
- * @returns {any[]}
- */
-function arrRemove(arr, indexs) {
+function arrRemove(arr, index) {
     return lodash.remove(arr, function (n, i) {
-        return i === indexs;
+        return i === index;
     });
 }
 
 /**
- * 
+ * 检查 p 是否是文件
  *
  * @param {string} p
  * @returns {boolean}
@@ -458,7 +376,7 @@ function isDir(p) {
 }
 
 /**
- * 判断一个文件或者目录是否可写
+ * 检查文件或文件夹 p 是否可写
  *
  * @param {string} p
  * @returns {boolean}
@@ -479,7 +397,7 @@ function isWritable(p) {
 }
 
 /**
- * 修改目录或者文件权限
+ * 修改文件或文件夹 p 的权限.
  * 同步模式
  * @param {string} p
  * @param {string} mode
@@ -494,7 +412,7 @@ function chmod(p, mode) {
 }
 
 /**
- * 读取文件
+ * 读取文件 filename 内容
  * 返回Promise
  * @param {string} filename 文件物理路径
  * @param {undefined | string} enc 为空返回Buffer类型,'utf8'返回String类型
@@ -509,7 +427,7 @@ function readFile(filename, enc) {
 }
 
 /**
- * 写入文件
+ * 将字符串 data 写入文件 filename
  * 返回Promise
  * @param {string} filename
  * @param {string} data
@@ -524,8 +442,8 @@ function writeFile(filename, data) {
 }
 
 /**
- * 修改文件名
- * 支持移动
+ * 将文件 filename 改名为 nfilename.如果 nfilename 和 filename 不在同一物理路径下,会触发移动文件操作.
+ * 返回Promise
  * @param {string} filename
  * @param {string} nfilename
  * @returns {*}
@@ -539,7 +457,7 @@ function reFile(filename, nfilename) {
 }
 
 /**
- * 删除文件
+ * 将文件 p 删除
  * 同步模式
  * @param {string} p 
  * @returns {boolean}
@@ -554,7 +472,7 @@ function rmFile(p) {
 }
 
 /**
- * 递归创建目录
+ * 根据路径 p 创建文件夹, 如果 p 包含多级新建路径,会自动递归创建
  * 同步模式
  * @param {string} p
  * @param {string} mode
@@ -577,13 +495,13 @@ function mkDir(p, mode) {
 }
 
 /**
- * 递归读取目录
+ * 递归读取路径 p 下的文件夹
  * 同步模式
  * @param {any} p 
  * @param {any} filter 
  * @param {any} files 
  * @param {any} prefix 
- * @returns 
+ * @returns {*}
  */
 function readDir(p, filter, files, prefix) {
     prefix = prefix || '';
@@ -607,7 +525,7 @@ function readDir(p, filter, files, prefix) {
 }
 
 /**
- * 递归的删除目录
+ * 递归删除路径 p 的子文件夹. reserve 为true时删除 p
  * 返回Promise
  * @template T
  * @param {string} p
@@ -659,23 +577,24 @@ function rmDir(p, reserve) {
 }
 
 /**
- * 
+ * hasOwnProperty缩写
  * 
  * @param {any} obj 
  * @param {any} property 
+ * @returns {boolean}
  */
 function hasOwn(obj, property) {
     return Object.prototype.hasOwnProperty.call(obj, property);
 }
 
 /**
- * 
+ * 检查 value 是否是 Promise 对象
  *
- * @param {*} obj
+ * @param {any} value
  * @returns {boolean}
  */
-function isPromise(obj) {
-    return !!(obj && obj.catch && typeof obj.then === 'function');
+function isPromise(value) {
+    return !!(value && value.catch && typeof value.then === 'function');
 }
 
 /**
@@ -683,7 +602,7 @@ function isPromise(obj) {
  *
  * @param {Function} fn
  * @param {object} receiver
- * @returns {*}
+ * @returns {Promise}
  */
 function promisify(fn, receiver) {
     return function (...args) {
@@ -696,19 +615,20 @@ function promisify(fn, receiver) {
 }
 
 /**
- * 判断是否是generator函数
+ * 检查 fn 是否是 GeneratorFunction
  * 
- * @param {any} obj 
- * @returns 
+ * @param {any} fn 
+ * @returns {boolean}
  */
-function isGenerator(obj) {
-    return !!(obj && typeof obj === 'function' && obj.constructor && obj.constructor.name === 'GeneratorFunction');
+function isGenerator(fn) {
+    return !!(fn && typeof fn === 'function' && fn.constructor && fn.constructor.name === 'GeneratorFunction');
 }
 
 /**
- * 将generator函数通过co转换为promise
+ * 将GeneratorFunction函数 fn 转换为 Promise 风格
  * 
  * @param {Function} fn 
+ * @returns {Promise}
  */
 function generatorToPromise(fn) {
     if (typeof fn !== 'function') {
@@ -722,7 +642,7 @@ function generatorToPromise(fn) {
 }
 
 /**
- * 生成一个defer对象
+ * 生成一个defer对象, {promise: new Promise()}
  * 
  * @returns {*} 
  */
@@ -737,7 +657,7 @@ function getDefer() {
 // define(lib, 'defer', lib.getDefer);
 
 /**
- * 加载文件
+ * require 的封装, 支持babel编译后的es6 module
  * 
  * @param {string} file
  * @returns {*}
@@ -756,11 +676,11 @@ function thinkrequire(file) {
 }
 
 /**
- * 克隆
+ * 拷贝对象 source, deep 为true时深度拷贝
  * 
  * @param {any} source 
  * @param {any} deep 
- * @returns 
+ * @returns {*}
  */
 function clone(source, deep) {
     if (deep) {
@@ -771,12 +691,12 @@ function clone(source, deep) {
 }
 
 /**
- * 继承
+ * 使对象 target 继承对象 source, deep为true时深度继承
  * 
  * @param {any} source 
  * @param {any} target 
  * @param {any} deep 
- * @returns 
+ * @returns {*}
  */
 function extend(source, target, deep) {
     if (deep) {
@@ -817,13 +737,11 @@ function extend(source, target, deep) {
 //         isJSONStr: isJSONStr,
 //         isEmpty: isEmpty,
 //         isTrueEmpty: isTrueEmpty,
-//         toString: toString,
-//         toInt: toInt,
-//         toFloat: toFloat,
-//         toNumber: toNumber,
-//         toBoolean: toBoolean,
-//         toArray: toArray,
-//         toObject: toObject,
+//         toString: lodash.toString,
+//         toInt: lodash.toInteger,
+//         toNumber: lodash.toNumber,
+//         toBoolean: lodash.toBoolean,
+//         toArray: lodash.toArray,
 //         escapeHtml: escapeHtml,
 //         escapeSpecial: escapeSpecial,
 //         ucFirst: ucFirst,
@@ -833,7 +751,7 @@ function extend(source, target, deep) {
 //         decryption: decryption,
 //         datetime: datetime,
 //         inArray: inArray,
-//         arrUnique: arrUnique,
+//         arrUnique: lodash.union,
 //         arrRemove: arrRemove,
 //         isFile: isFile,
 //         isDir: isDir,
@@ -846,6 +764,7 @@ function extend(source, target, deep) {
 //         mkDir: mkDir,
 //         readDir: readDir,
 //         rmDir: rmDir,
+//         hasOwn: hasOwn,
 //         isPromise: isPromise,
 //         promisify: promisify,
 //         isGenerator: isGenerator,
@@ -873,7 +792,7 @@ function extend(source, target, deep) {
 
 // module.exports = lib;
 
-module.exports = new Proxy({
+const lib = new Proxy({
     sep: path.sep,
     eq: lodash.eq,
     gt: lodash.gt,
@@ -904,13 +823,10 @@ module.exports = new Proxy({
     isJSONStr: isJSONStr,
     isEmpty: isEmpty,
     isTrueEmpty: isTrueEmpty,
-    toString: toString,
-    toInt: toInt,
-    toFloat: toFloat,
-    toNumber: toNumber,
-    toBoolean: toBoolean,
-    toArray: toArray,
-    toObject: toObject,
+    toString: lodash.toString,
+    toInt: lodash.toInteger,
+    toNumber: lodash.toNumber,
+    toArray: lodash.toArray,
     escapeHtml: escapeHtml,
     escapeSpecial: escapeSpecial,
     ucFirst: ucFirst,
@@ -920,7 +836,7 @@ module.exports = new Proxy({
     decryption: decryption,
     datetime: datetime,
     inArray: inArray,
-    arrUnique: arrUnique,
+    arrUnique: lodash.union,
     arrRemove: arrRemove,
     isFile: isFile,
     isDir: isDir,
@@ -933,6 +849,7 @@ module.exports = new Proxy({
     mkDir: mkDir,
     readDir: readDir,
     rmDir: rmDir,
+    hasOwn: hasOwn,
     isPromise: isPromise,
     promisify: promisify,
     isGenerator: isGenerator,
