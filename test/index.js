@@ -5,7 +5,7 @@
  * @license    MIT
  * @version    22/5/27
  */
-
+/*eslint-disable*/
 const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
