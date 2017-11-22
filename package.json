@@ -22,10 +22,9 @@
   },
   "homepage": "https://github.com/thinkkoa/think_lib",
   "devDependencies": {
-    "eslint": "^3.19.0",
-    "istanbul": "^0.4.5",
-    "mocha": "^3.4.2"
-  },
+    "eslint": "^4.11.0",
+    "istanbul": "^1.1.0-alpha.1",
+    "mocha": "^4.0.1"
   "dependencies": {
     "co": "^4.6.0",
     "lodash": "^4.17.4"
