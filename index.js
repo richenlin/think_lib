@@ -9,12 +9,11 @@
 const fs = require('fs');
 const co = require('co');
 const path = require('path');
-const net = require('net');
 const crypto = require('crypto');
 const lodash = require('lodash');
 
 /**
- * console.log 封装
+ * Formatted console.log output
  * 
  * @param {any} str 
  * @returns {void}
@@ -28,8 +27,8 @@ global.echo = function (str) {
 
 /*eslint-disable func-style */
 /**
- * 将对象 obj 进行原型实例转换,以整理该对象存储的数据结构,在v8引擎下访问此对象会更快
- * 
+ * The object obj prototype instance conversion to organize the data structure stored in the object,
+ * access to this object in the v8 engine will be faster
  * @param {any} obj 
  * @returns {void}
  */
@@ -40,8 +39,8 @@ function toFastProperties(obj) {
     new f();
 }
 /**
- * Object.defineProperty的封装
- * 当 setter 为false时属性 property 为getter
+ * Short for Object.defineProperty,
+ * the property is getter when setter is false
  * @param {any} obj 
  * @param {any} property 
  * @param {any} value 
@@ -68,18 +67,18 @@ function define(obj, property, value, setter = false) {
 }
 
 /**
- * 检查 value 是否是仅包含数字的字符串
+ * Checks if value is a string that contains only numbers
  * 
  * @param {any} value 
  * @returns {boolean}
  */
 function isNumberString(value) {
     let numberReg = /^((\-?\d*\.?\d*(?:e[+-]?\d*(?:\d?\.?|\.?\d?)\d*)?)|(0[0-7]+)|(0x[0-9a-f]+))$/i;
-    return numberReg.test(value);
+    return lodash.isString(value) && !isEmpty(value) && numberReg.test(value);
 }
 /**
- * 检查 value 是否是标准JSON对象
- * 必须是标准对象或数组
+ * Checks if value is a standard JSON object,
+ * must be a plain object or array
  * @param {any} value 
  * @returns {boolean}
  */
@@ -88,8 +87,8 @@ function isJSONObj(value) {
 }
 
 /**
- * 检查 value 是否是标准的JSON字符串
- * 必须是字符串，且可以被反序列化为对象或数组
+ * Checks if value is a standard JSON string,
+ * must be a string, and can be deserialized as an plain object or array
  * @param {any} value
  * @returns {boolean}
  */
@@ -105,8 +104,8 @@ function isJSONStr(value) {
 }
 
 /**
- * 检查 value 是否为空
- * 不考虑空对象、空数组、空格、制表符、换页符等
+ * Checks value is empty,
+ * do not consider empty objects, empty arrays, spaces, tabs, form breaks, etc.
  * @param {any} value
  * @returns {boolean}
  */
@@ -121,8 +120,8 @@ function isTrueEmpty(value) {
 }
 
 /**
- * 检查 value 是否为空
- * undefined,null,'',NaN,[],{}和任何空白字符，包括空格、制表符、换页符等等，均返回true
+ * Checks value is empty,
+ * undefined, null, '', NaN, [], {} and any empty string(including spaces, tabs, formfeeds, etc.), returns true
  * @param {any} value
  * @returns {boolean}
  */
@@ -147,7 +146,7 @@ function isEmpty(value) {
 }
 
 /**
- * 转换 value 中的特殊字符 > < " ' 为实体符
+ * Convert special characters(> < " ') for entity character
  *
  * @param {string} value
  * @returns {string}
@@ -165,7 +164,7 @@ function escapeHtml(value) {
 }
 
 /**
- * 转换 value 中的实体符还原为 > < " '
+ * Convert entity value in value to(> < " ')
  *
  * @param {string} value
  * @returns {string}
@@ -184,7 +183,7 @@ function escapeSpecial(value) {
 }
 
 /**
- * 转换 value 中的首字母为大写
+ * Convert the first letter in the value to uppercase
  * 
  * @param {string} value 
  * @returns {string} 
@@ -195,7 +194,7 @@ function ucFirst(value) {
 }
 
 /**
- * 计算 value 的MD5散列值
+ * Calculate the MD5 hash of value
  *
  * @param {string} value
  * @returns {string}
@@ -207,7 +206,21 @@ function md5(value) {
 }
 
 /**
- * 伪随机获取min和max范围内的整数
+ * Calculate the value of MD5 hash value, including simple salt
+ * 
+ * @param {string} value 
+ * @param {string} [salt='abcdefghijklmnopqrstuvwxyz1234567890'] 
+ * @returns 
+ */
+function md5Salt(value, salt = 'abcdefghijklmnopqrstuvwxyz1234567890') {
+    let ins = crypto.createHash('md5');
+    value = value + salt.slice(value.length % salt.length, salt.length);
+    ins.update(value);    
+    return ins.digest('hex');
+}
+
+/**
+ * Pseudo-random access min and max range of integers
  *
  * @param {number} min
  * @param {number} max
@@ -218,53 +231,7 @@ function rand(min, max) {
 }
 
 /**
- * 将字符串data进行AES加密
- *
- * @param {string} data 需要加密的字符串
- * @param {string} key 密钥 (必须为16位字符串)
- * @returns {string}
- */
-function encryption(data, key) {
-    try {
-        let iv = '0000000000000000';
-        // let clearEncoding = 'utf8';
-        // let cipherEncoding = 'base64';
-        let cipherChunks = [];
-        let cipher = crypto.createCipheriv('aes-128-cbc', key, iv);
-        cipher.setAutoPadding(true);
-        cipherChunks.push(cipher.update(data, 'utf8', 'base64'));
-        cipherChunks.push(cipher.final('base64'));
-        return encodeURIComponent(cipherChunks.join(''));
-    } catch (e) {
-        return '';
-    }
-}
-
-/**
- * 将AES加密的字符串data进行解密
- *
- * @param {string} data 需要解密的字符串
- * @param {string} key 密钥 (必须为16位字符串)
- * @returns {string}
- */
-function decryption(data, key) {
-    try {
-        let iv = '0000000000000000';
-        // let clearEncoding = 'utf8';
-        // let cipherEncoding = 'base64';
-        let cipherChunks = [];
-        let decipher = crypto.createDecipheriv('aes-128-cbc', key, iv);
-        decipher.setAutoPadding(true);
-        cipherChunks.push(decipher.update(decodeURIComponent(data), 'base64', 'utf8'));
-        cipherChunks.push(decipher.final('utf8'));
-        return cipherChunks.join('');
-    } catch (e) {
-        return '';
-    }
-}
-
-/**
- * 日期时间戳及格式化
+ * Date time stamp and formatting
  *
  * @param {any} date
  * @param {any} format
@@ -310,8 +277,8 @@ function datetime(date, format) {
 }
 
 /**
- * 判断 value 是否为数组 arr 的元素
- * 仅判断 value 值同元素值相等,不判断类型
+ * Determines whether value is an element of array arr,
+ * only determine the same value with the element, do not determine the type
  * @param {any} value
  * @param {any[]} arr
  * @returns {boolean}
@@ -327,7 +294,7 @@ function inArray(value, arr) {
 }
 
 /**
- * 将数组 arr 中指定下标 index 元素移除
+ * Removes the specified index element from the array
  * 
  * @param {any[]} arr
  * @param {any[]} index
@@ -335,12 +302,12 @@ function inArray(value, arr) {
  */
 function arrRemove(arr, index) {
     return lodash.remove(arr, function (n, i) {
-        return i === index;
+        return i !== index;
     });
 }
 
 /**
- * 检查 p 是否是文件
+ * Checks if p is a file
  *
  * @param {string} p
  * @returns {boolean}
@@ -358,7 +325,7 @@ function isFile(p) {
 }
 
 /**
- * 
+ * Checks if p is a dir
  *
  * @param {string} p
  * @returns {boolean}
@@ -376,7 +343,7 @@ function isDir(p) {
 }
 
 /**
- * 检查文件或文件夹 p 是否可写
+ * Checks if the file or folder p is writable
  *
  * @param {string} p
  * @returns {boolean}
@@ -397,8 +364,8 @@ function isWritable(p) {
 }
 
 /**
- * 修改文件或文件夹 p 的权限.
- * 同步模式
+ * Modify the permissions of the file or folder p.
+ * Synchronous mode
  * @param {string} p
  * @param {string} mode
  * @returns {*}
@@ -406,17 +373,18 @@ function isWritable(p) {
 function chmod(p, mode) {
     mode = mode || '0777';
     if (!fs.existsSync(p)) {
-        return true;
+        return false;
     }
-    return fs.chmodSync(p, mode);
+    fs.chmodSync(p, mode);
+    return true;
 }
 
 /**
- * 读取文件 filename 内容
- * 返回Promise
+ * Read the contents of the file filename.
+ * Asynchronous mode
  * @param {string} filename 文件物理路径
  * @param {undefined | string} enc 为空返回Buffer类型,'utf8'返回String类型
- * @returns {*}
+ * @returns {promise}
  */
 function readFile(filename, enc) {
     return new Promise(function (fulfill, reject) {
@@ -427,11 +395,11 @@ function readFile(filename, enc) {
 }
 
 /**
- * 将字符串 data 写入文件 filename
- * 返回Promise
+ * Write the string data to file.
+ * Asynchronous mode
  * @param {string} filename
  * @param {string} data
- * @returns {*}
+ * @returns {promise}
  */
 function writeFile(filename, data) {
     return new Promise(function (fulfill, reject) {
@@ -442,8 +410,8 @@ function writeFile(filename, data) {
 }
 
 /**
- * 将文件 filename 改名为 nfilename.如果 nfilename 和 filename 不在同一物理路径下,会触发移动文件操作.
- * 返回Promise
+ * Rename the filename to nfilename. If nfilename and filename are not in the same physical path, the move file action will be triggered.
+ * Asynchronous mode
  * @param {string} filename
  * @param {string} nfilename
  * @returns {*}
@@ -457,8 +425,8 @@ function reFile(filename, nfilename) {
 }
 
 /**
- * 将文件 p 删除
- * 同步模式
+ * Delete the file p.
+ * Synchronous mode
  * @param {string} p 
  * @returns {boolean}
  */
@@ -472,14 +440,13 @@ function rmFile(p) {
 }
 
 /**
- * 根据路径 p 创建文件夹, 如果 p 包含多级新建路径,会自动递归创建
- * 同步模式
+ * According to the path p to create a folder, p contains multi-level new path will be automatically recursively created.
+ * Synchronous mode
  * @param {string} p
- * @param {string} mode
+ * @param {number} mode
  * @returns {*}
  */
-function mkDir(p, mode) {
-    mode = mode || '0777';
+function mkDir(p, mode = 777) {
     if (fs.existsSync(p)) {
         fs.chmodSync(p, mode);
         return true;
@@ -495,8 +462,8 @@ function mkDir(p, mode) {
 }
 
 /**
- * 递归读取路径 p 下的文件夹
- * 同步模式
+ * Recursively read the path under the p folder.
+ * Synchronous mode
  * @param {any} p 
  * @param {any} filter 
  * @param {any} files 
@@ -525,8 +492,8 @@ function readDir(p, filter, files, prefix) {
 }
 
 /**
- * 递归删除路径 p 的子文件夹. reserve 为true时删除 p
- * 返回Promise
+ * Subfolders of path p are recursively deleted. When reserve is true, the top-level folder is deleted
+ * Asynchronous mode
  * @template T
  * @param {string} p
  * @param {boolean} reserve
@@ -577,7 +544,7 @@ function rmDir(p, reserve) {
 }
 
 /**
- * hasOwnProperty缩写
+ * Short for hasOwnProperty
  * 
  * @param {any} obj 
  * @param {any} property 
@@ -588,7 +555,7 @@ function hasOwn(obj, property) {
 }
 
 /**
- * 检查 value 是否是 Promise 对象
+ * Checks if value is a Promise object
  *
  * @param {any} value
  * @returns {boolean}
@@ -598,7 +565,7 @@ function isPromise(value) {
 }
 
 /**
- * 将callback风格的函数转换为Promise
+ * Convert callback-style functions to Promises
  *
  * @param {Function} fn
  * @param {object} receiver
@@ -615,7 +582,7 @@ function promisify(fn, receiver) {
 }
 
 /**
- * 检查 fn 是否是 GeneratorFunction
+ * Checks if fn is a GeneratorFunction
  * 
  * @param {any} fn 
  * @returns {boolean}
@@ -625,7 +592,7 @@ function isGenerator(fn) {
 }
 
 /**
- * 将GeneratorFunction函数 fn 转换为 Promise 风格
+ * Convert GeneratorFunction fn to Promise
  * 
  * @param {Function} fn 
  * @returns {Promise}
@@ -642,8 +609,8 @@ function generatorToPromise(fn) {
 }
 
 /**
- * 生成一个defer对象, {promise: new Promise()}
- * 
+ * Generate a defer object, 
+ * for example: {promise: new Promise()}
  * @returns {*} 
  */
 function getDefer() {
@@ -657,7 +624,7 @@ function getDefer() {
 // define(lib, 'defer', lib.getDefer);
 
 /**
- * require 的封装, 支持babel编译后的es6 module
+ * Support for babel compiled es6 module require
  * 
  * @param {string} file
  * @returns {*}
@@ -676,7 +643,7 @@ function thinkrequire(file) {
 }
 
 /**
- * 拷贝对象 source, deep 为true时深度拷贝
+ * Copy the source, deep deep to true depth copy
  * 
  * @param {any} source 
  * @param {any} deep 
@@ -691,8 +658,8 @@ function clone(source, deep) {
 }
 
 /**
- * 使对象 target 继承对象 source, deep为true时深度继承
- * 
+ * So that the target object inherits the source, 
+ * deep depth is true depth inheritance
  * @param {any} source 
  * @param {any} target 
  * @param {any} deep 
@@ -721,7 +688,6 @@ module.exports = new Proxy({
     isEqual: lodash.isEqual,
     isError: lodash.isError,
     isFunction: lodash.isFunction,
-    isIP: net.isIP,
     isMap: lodash.isMap,
     isNull: lodash.isNull,
     isNaN: lodash.isNaN,
@@ -746,9 +712,8 @@ module.exports = new Proxy({
     escapeSpecial: escapeSpecial,
     ucFirst: ucFirst,
     md5: md5,
+    md5Salt: md5Salt,
     rand: rand,
-    encryption: encryption,
-    decryption: decryption,
     datetime: datetime,
     inArray: inArray,
     arrUnique: lodash.union,
