@@ -2,7 +2,7 @@
 -----
 
 [![npm version](https://badge.fury.io/js/think_lib.svg)](https://badge.fury.io/js/think_lib)
-[![Dependency Status](https://david-dm.org/thinkkoa/think_lib.svg)](https://david-dm.org/thinkkoa/think_lib)
+[![Build Status](https://travis-ci.org/thinkkoa/think_lib.svg?branch=master)](https://travis-ci.org/thinkkoa/think_lib)
 
 ThinkKoa functions Libs.
 
