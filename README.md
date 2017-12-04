@@ -46,9 +46,6 @@ ThinkKoa functions Libs.
 ## isFunction(value)
 检查 value 是否是 Function 对象
 
-## isIP(value)
-检查 value 是否是 IP,包含 IPV4及IPV6
-
 ## isMap(value)
 检查 value 是否是个 Map 对象
 
@@ -120,14 +117,11 @@ undefined,null,'',NaN,[],{}和任何空白字符，包括空格、制表符、�
 ## md5(value)
 计算 value 的MD5散列值
 
+## md5Salt(value, salt)
+计算 value 的MD5散列值, 包含简单的加盐
+
 ## rand(min, max)
 伪随机获取min和max范围内的整数
-
-## encryption(data, key)
-将字符串data进行AES加密. key必须为16位字符串
-
-## decryption(data, key)
-将AES加密的字符串data进行解密. key必须为16位字符串
 
 ## datetime(date[, format = 'yyyy-mm-dd hh:mi:ss'])
 日期时间戳及格式化
