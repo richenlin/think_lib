@@ -297,7 +297,7 @@ function inArray(value, arr) {
  * Removes the specified index element from the array
  * 
  * @param {any[]} arr
- * @param {any[]} index
+ * @param {number} index
  * @returns {any[]}
  */
 function arrRemove(arr, index) {
@@ -431,9 +431,8 @@ function reFile(filename, nfilename) {
  * @returns {boolean}
  */
 function rmFile(p) {
-    let fn = function () { };
     if (isFile(p)) {
-        fs.unlinkSync(p, fn);
+        fs.unlinkSync(p);
         return true;
     }
     return false;
@@ -739,7 +738,6 @@ module.exports = new Proxy({
     require: thinkrequire,
     clone: clone,
     extend: extend,
-    hasOwn: hasOwn,
     define: define,
     toFastProperties: toFastProperties,
 

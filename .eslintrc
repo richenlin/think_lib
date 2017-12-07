@@ -5,9 +5,10 @@
   },
   "env": {
     "es6": true,
+    "browser": true,
     "node": true
   },
-  // "extends": "eslint:recommended",
+  "extends": ["eslint:recommended"],
 
   // 规则按照首字母在字母表升序排序
   "rules": {
@@ -15,7 +16,7 @@
     // 单行代码块大括号后需要一个空格
     "block-spacing": 2,
 
-    // 不使用外部块定义的变量
+    // 不使用外部块定义的变量,防止变量提升导致的bug
     "block-scoped-var": 1,
 
     // 大括号位置
@@ -50,7 +51,7 @@
     "eqeqeq": 1,
 
     // 使用函数声明还是是函数表达式
-    "func-style": ["error", "expression"],
+    "func-style": [1, "expression"],
 
     // 缩进空格
     // `SwitchCase`时需要一个空格
@@ -68,11 +69,14 @@
     // 类构建函数需要括号
     "new-parens": 2,
 
-    // 不允许使用`alert`函数
-    "no-alert": 2,
+    // warn: 代码中使用了alert给出警告
+    "no-alert": 1,
 
     // 数组尽量不使用构造函数
     "no-array-constructor": 2,
+
+    // off; 不允许在循环中出现await
+    "no-await-in-loop": 2,
 
     // 不使用`console`
     "no-console": 0,
@@ -82,6 +86,9 @@
 
     // 不使用`var x; delete x;`
     "no-delete-var": 2,
+
+    // error; 不允许使用空函数，除非在空函数里面给出注释说明
+    "no-empty-function": 1,
 
     //禁止空块语句
     "no-empty": 1,
@@ -157,11 +164,14 @@
     "no-octal": 2,
     "no-octal-escape": 2,
 
+    //禁用 process.exit()
+    "no-process-exit": 1,
+
     // 不使用被废弃的`__proto__`
     "no-proto": 2,
 
-    //禁用 process.exit()
-    "no-process-exit": 1,
+    // warn; 直接调用对象原型链上的方法
+    "no-prototype-builtins": 1,
 
     // 不重复声明变量
     "no-redeclare": 2,
@@ -197,7 +207,10 @@
     "quotes": [2, "single", {"avoidEscape": true, "allowTemplateLiterals": true}],
 
     // 分号
-    "semi": [2, "always"],     
+    "semi": [2, "always"], 
+    
+    // off; 函数注释一定要遵守jsdoc规则
+    "valid-jsdoc": 0,
 
     //强制 typeof 表达式与有效的字符串进行比较
     "valid-typeof": 2,
