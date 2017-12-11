@@ -32,7 +32,7 @@
     "comma-style": [2, "last"],
 
     // 要求使用一致的 return 语句
-    "consistent-return": 2,
+    "consistent-return": 1,
 
     // 使用语句大括号
     "curly": [2, "all"],
@@ -161,7 +161,7 @@
 
     // 不使用八进制数字
     // `var num = 071; -> 57`
-    "no-octal": 2,
+    "no-octal": 1,
     "no-octal-escape": 2,
 
     //禁用 process.exit()

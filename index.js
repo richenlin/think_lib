@@ -73,7 +73,7 @@ function define(obj, property, value, setter = false) {
  * @returns {boolean}
  */
 function isNumberString(value) {
-    let numberReg = /^((\-?\d*\.?\d*(?:e[+-]?\d*(?:\d?\.?|\.?\d?)\d*)?)|(0[0-7]+)|(0x[0-9a-f]+))$/i;
+    let numberReg = /^((-?\d*\.?\d*(?:e[+-]?\d*(?:\d?\.?|\.?\d?)\d*)?)|(0[0-7]+)|(0x[0-9a-f]+))$/i;
     return lodash.isString(value) && !isEmpty(value) && numberReg.test(value);
 }
 /**
@@ -367,16 +367,15 @@ function isWritable(p) {
  * Modify the permissions of the file or folder p.
  * Synchronous mode
  * @param {string} p
- * @param {string} mode
+ * @param {number} mode
  * @returns {*}
  */
 function chmod(p, mode) {
-    mode = mode || '0777';
+    mode = mode || 0777;
     if (!fs.existsSync(p)) {
-        return false;
+        return true;
     }
-    fs.chmodSync(p, mode);
-    return true;
+    return fs.chmodSync(p, mode);
 }
 
 /**
@@ -445,19 +444,16 @@ function rmFile(p) {
  * @param {number} mode
  * @returns {*}
  */
-function mkDir(p, mode = 777) {
+function mkDir(p, mode = 0777) {
     if (fs.existsSync(p)) {
-        fs.chmodSync(p, mode);
+        chmod(p, mode);
         return true;
-    }
-    let pp = path.dirname(p);
-    if (fs.existsSync(pp)) {
-        fs.mkdirSync(p, mode);
     } else {
-        mkDir(pp, mode);
-        mkDir(p, mode);
+        if (mkDir(path.dirname(p))) {
+            fs.mkdirSync(p, mode);
+            return true;
+        }
     }
-    return true;
 }
 
 /**
