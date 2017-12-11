@@ -445,7 +445,7 @@ describe('think_lib', function (){
     });
     it("chmod", function() {
         return lib.writeFile(path.resolve("./test/.test1.js"), 'test').then(() => {
-            assert.ok(lib.chmod(path.resolve("./test/.test1.js")));
+            assert.ok(lib.chmod(path.resolve("./test/.test1.js")) == undefined);
             return lib.rmFile(path.resolve("./test/.test1.js"));
         });
     });
