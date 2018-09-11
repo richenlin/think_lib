@@ -201,7 +201,7 @@ function ucFirst(value) {
  */
 function md5(value) {
     let ins = crypto.createHash('md5');
-    ins.update(value + '', 'utf8');
+    ins.update(value);
     return ins.digest('hex');
 }
 
