@@ -9,8 +9,10 @@
 const fs = require('fs');
 const co = require('co');
 const path = require('path');
+const util = require('util');
 const crypto = require('crypto');
 const lodash = require('lodash');
+const Promise = require('bluebird');
 
 /**
  * Formatted console.log output
@@ -668,6 +670,21 @@ function extend(source, target, deep) {
     }
 }
 
+/**
+ * User-defined Error
+ *
+ * @param {*} code
+ * @param {*} message
+ */
+const err = function(obj) {
+    Object.assign(this, obj);
+    Promise.OperationalError.call(this, obj.message || '');
+};
+util.inherits(err, Promise.OperationalError);
+function error(obj) {
+    return new err(obj);
+}
+
 //module exports
 module.exports = new Proxy({
     sep: path.sep,
@@ -736,7 +753,7 @@ module.exports = new Proxy({
     extend: extend,
     define: define,
     toFastProperties: toFastProperties,
-
+    Error: error,
 }, {
     set: function (target, key, value, receiver) {
         if (Reflect.get(target, key, receiver) === undefined) {
