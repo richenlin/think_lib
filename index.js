@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 /**
  *
  * @author     richen
@@ -217,7 +218,7 @@ function md5(value) {
 function md5Salt(value, salt = 'abcdefghijklmnopqrstuvwxyz1234567890') {
     let ins = crypto.createHash('md5');
     value = value + salt.slice(value.length % salt.length, salt.length);
-    ins.update(value);    
+    ins.update(value);
     return ins.digest('hex');
 }
 
@@ -640,6 +641,29 @@ function thinkrequire(file) {
 }
 
 /**
+ * 
+ * @param fn 
+ */
+function fnBody(fn) {
+    return toString.call(fn).replace(/^[^{]*{\s*/, '').replace(/\s*}[^}]*$/, '');
+}
+/**
+ * 
+ * @param fn 
+ */
+function isClass(fn) {
+    if (typeof fn !== 'function') {
+        return false;
+    }
+    if (/^class[\s{]/.test(toString.call(fn))) {
+        return true;
+    }
+    // babel.js classCallCheck() & inlined
+    const body = fnBody(fn);
+    return (/classCallCheck\(/.test(body) || /TypeError\("Cannot call a class as a function"\)/.test(body));
+}
+
+/**
  * Copy the source, deep deep to true depth copy
  * 
  * @param {any} source 
@@ -676,7 +700,7 @@ function extend(source, target, deep) {
  * @param {*} code
  * @param {*} message
  */
-const err = function(obj) {
+const err = function (obj) {
     Object.assign(this, obj);
     Promise.OperationalError.call(this, obj.message || '');
 };
@@ -700,6 +724,7 @@ module.exports = new Proxy({
     isEqual: lodash.isEqual,
     isError: lodash.isError,
     isFunction: lodash.isFunction,
+    isClass: isClass,
     isMap: lodash.isMap,
     isNull: lodash.isNull,
     isNaN: lodash.isNaN,
@@ -755,14 +780,14 @@ module.exports = new Proxy({
     toFastProperties: toFastProperties,
     Error: error,
 }, {
-    set: function (target, key, value, receiver) {
-        if (Reflect.get(target, key, receiver) === undefined) {
-            return Reflect.set(target, key, value, receiver);
-        } else {
-            throw Error('Cannot redefine getter-only property');
+        set: function (target, key, value, receiver) {
+            if (Reflect.get(target, key, receiver) === undefined) {
+                return Reflect.set(target, key, value, receiver);
+            } else {
+                throw Error('Cannot redefine getter-only property');
+            }
+        },
+        deleteProperty: function (target, key) {
+            throw Error('Cannot delete getter-only property');
         }
-    },
-    deleteProperty: function (target, key) {
-        throw Error('Cannot delete getter-only property');
-    }
-});
+    });
