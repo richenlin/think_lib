@@ -1,6 +1,6 @@
 {
   "name": "think_lib",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "description": "ThinkKoa functions Libs.",
   "main": "index.js",
   "scripts": {
@@ -22,9 +22,9 @@
   },
   "homepage": "https://github.com/thinkkoa/think_lib",
   "devDependencies": {
-    "eslint": "^4.11.0",
+    "eslint": "^6.2.1",
     "istanbul": "^1.1.0-alpha.1",
-    "mocha": "^4.0.1"
+    "mocha": "^6.2.0"
   },
   "dependencies": {
     "bluebird": "^3.5.5",
