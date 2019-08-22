@@ -112,14 +112,6 @@ declare function isPromise(value: any): boolean;
  * @return  
  */
 declare function promisify(fn: Function, receiver: any): (...args: any) => void;
-/**
- * Convert callback-style functions to Promises
- * 
- * @param {Function} fn
- * @param {object} receiver
- * @returns {Promise}
- */
-declare function promisify();
 
 /**
  * Checks if fn is a GeneratorFunction
@@ -485,7 +477,7 @@ declare function toString(value: any): string;
 declare function toInteger(value: any): number;
 declare function toNumber(value: any): number;
 declare function toArray<T>(value: T): Array<T[keyof T]>;
-declare function union<T>(...arrays: Array<List<T> | null | undefined>): T[];
+declare function union<T>(...arrays: Array<Array<T> | null | undefined>): T[];
 
 /**
  * pring to console
