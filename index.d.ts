@@ -452,6 +452,42 @@ declare function preserveCamelCase(string: any): string;
 declare function camelCase(input: string, options: any): string;
 
 /**
+ * Checks if value is a callable function.
+ *
+ * @param value The value to check.
+ * @return Returns true if value is correctly classified, else false.
+ */
+declare function isFunction(value: any): value is (...args: any[]) => any;
+
+
+declare function eq(value: any, other: any): boolean;
+declare function gt(value: any, other: any): boolean;
+declare function gte(value: any, other: any): boolean;
+declare function lt(value: any, other: any): boolean;
+declare function lte(value: any, other: any): boolean;
+declare function isArray<T>(value?: any): value is any[];
+declare function isBoolean(value?: any): value is boolean;
+declare function isBuffer(value?: any): boolean;
+declare function isDate(value?: any): value is Date;
+declare function isEqual(value: any, other: any): boolean;
+declare function isError(value: any): value is Error;
+declare function isMap(value?: any): value is Map<any, any>;
+declare function isNull(value: any): value is null;
+declare function isNaN(value?: any): boolean;
+declare function isUndefined(value: any): value is undefined;
+declare function isNumber(value?: any): value is number;
+declare function isObject(value?: any): boolean;
+declare function isRegExp(value?: any): value is RegExp;
+declare function isSet(value?: any): value is Set<any>;
+declare function isString(value?: any): value is string;
+declare function isSymbol(value: any): boolean;
+declare function toString(value: any): string;
+declare function toInteger(value: any): number;
+declare function toNumber(value: any): number;
+declare function toArray<T>(value: T): Array<T[keyof T]>;
+declare function union<T>(...arrays: Array<List<T> | null | undefined>): T[];
+
+/**
  * pring to console
  * @param str 
  */
