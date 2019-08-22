@@ -148,7 +148,7 @@ declare function generatorToPromise(fn: Function): Function;
  * @param strict 
  * @return  
  */
-declare function isClass(obj: any, strict: any): boolean;
+declare function isClass(obj: any, strict?: boolean): boolean;
 
 /**
  * Convert special characters(> < " ') for entity character
@@ -301,7 +301,7 @@ declare function chmod(p: string, mode: number): boolean;
  * @param enc 
  * @return  
  */
-declare function readFile(filename: string, enc: string): Promise;
+declare function readFile<T>(filename: string, enc: string): Promise<T>;
 
 /**
  * Write the string data to file.
@@ -313,7 +313,7 @@ declare function readFile(filename: string, enc: string): Promise;
  * @param data 
  * @return  
  */
-declare function writeFile(filename: string, data: string): Promise;
+declare function writeFile<T>(filename: string, data: string): Promise<T>;
 
 /**
  * Rename the filename to nfilename. If nfilename and filename are not in the same physical path, the move file action will be triggered.
@@ -325,7 +325,7 @@ declare function writeFile(filename: string, data: string): Promise;
  * @param nfilename 
  * @return  
  */
-declare function reFile(filename: string, nfilename: string): Promise;
+declare function reFile<T>(filename: string, nfilename: string): Promise<T>;
 
 /**
  * Delete the file p.
@@ -376,7 +376,7 @@ declare function readDir(p: any, filter: any, files: string | Array<any>, prefix
  * @param reserve 
  * @return  
  */
-declare function rmDir(p: string, reserve: boolean): Promise;
+declare function rmDir<T>(p: string, reserve: boolean): Promise<T>;
 
 /**
  * Generate a defer object,
@@ -384,7 +384,7 @@ declare function rmDir(p: string, reserve: boolean): Promise;
  * @returns {*}
  * @return  
  */
-declare function getDefer(): Ret;
+declare function getDefer<T>(): Promise<T>;
 
 /**
  * Support for babel compiled es6 module require
@@ -433,7 +433,7 @@ declare function err(obj: any): void;
  * @param obj 
  * @return  
  */
-declare function error(obj: any): err;
+declare function error(obj: any): Error;
 
 /**
  * @param {*} string
@@ -450,3 +450,12 @@ declare function preserveCamelCase(string: any): string;
  * @return  
  */
 declare function camelCase(input: string, options: any): string;
+
+/**
+ * pring to console
+ * @param str 
+ */
+// declare function echo(str: string): void;
+export var echo: Function;
+
+declare module "think_lib" { }
