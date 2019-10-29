@@ -197,6 +197,14 @@ function isGenerator(fn) {
 }
 
 /**
+ * Checks if value is a Async Function
+ * @param {*} value 
+ */
+function isAsyncFunction(fn) {
+    return !!(fn && fn.constructor && 'AsyncFunction' === fn.constructor.name);
+}
+
+/**
  * Convert GeneratorFunction fn to Promise
  * 
  * @param {Function} fn 
@@ -488,7 +496,7 @@ function isWritable(p) {
  * @returns {*}
  */
 function chmod(p, mode) {
-    mode = mode || 0777;
+    mode = mode || '0777';
     if (!fs.existsSync(p)) {
         return true;
     }
@@ -561,7 +569,7 @@ function rmFile(p) {
  * @param {number} mode
  * @returns {*}
  */
-function mkDir(p, mode = 0777) {
+function mkDir(p, mode = '0777') {
     if (fs.existsSync(p)) {
         chmod(p, mode);
         return true;
@@ -571,6 +579,7 @@ function mkDir(p, mode = 0777) {
             return true;
         }
     }
+    return false;
 }
 
 /**
@@ -874,6 +883,7 @@ module.exports = new Proxy({
     rmDir: rmDir,
     hasOwn: hasOwn,
     isPromise: isPromise,
+    isAsyncFunction: isAsyncFunction,
     promisify: promisify,
     isGenerator: isGenerator,
     generatorToPromise: generatorToPromise,

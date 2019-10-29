@@ -124,6 +124,16 @@ declare function promisify(fn: Function, receiver: any): (...args: any) => void;
 declare function isGenerator(fn: Function): boolean;
 
 /**
+ * Checks if value is a Async Function
+ * 
+ * @param {any} fn
+ * @returns {boolean}
+ * @param fn 
+ * @return  
+ */
+declare function isAsyncFunction(fn: Function): boolean;
+
+/**
  * Convert GeneratorFunction fn to Promise
  * 
  * @param {Function} fn
@@ -215,7 +225,7 @@ declare function rand(min: number, max: number): number;
  * @param format 
  * @return  
  */
-declare function datetime(date: {} | string, format: string): string;
+declare function datetime(date: {} | string, format?: string): string;
 
 /**
  * Determines whether value is an element of array arr,
@@ -275,13 +285,13 @@ declare function isWritable(p: string): boolean;
  * Modify the permissions of the file or folder p.
  * Synchronous mode
  * @param {string} p
- * @param {number} mode
+ * @param {string} mode
  * @returns {*}
  * @param p 
  * @param mode 
  * @return  
  */
-declare function chmod(p: string, mode: number): boolean;
+declare function chmod(p: string, mode?: string): boolean;
 
 /**
  * Read the contents of the file filename.
@@ -293,7 +303,7 @@ declare function chmod(p: string, mode: number): boolean;
  * @param enc 
  * @return  
  */
-declare function readFile<T>(filename: string, enc: string): Promise<T>;
+declare function readFile<T>(filename: string, enc?: string): Promise<T>;
 
 /**
  * Write the string data to file.
@@ -333,13 +343,13 @@ declare function rmFile(p: string): boolean;
  * According to the path p to create a folder, p contains multi-level new path will be automatically recursively created.
  * Synchronous mode
  * @param {string} p
- * @param {number} mode
+ * @param {string} mode
  * @returns {*}
  * @param p 
  * @param mode 
  * @return  
  */
-declare function mkDir(p: string, mode: number): boolean;
+declare function mkDir(p: string, mode?: string): boolean;
 
 /**
  * Recursively read the path under the p folder.
@@ -355,7 +365,7 @@ declare function mkDir(p: string, mode: number): boolean;
  * @param prefix 
  * @return  
  */
-declare function readDir(p: any, filter: any, files: string | Array<any>, prefix: string): Array<any>;
+declare function readDir(p: any, filter: any, files: string | Array<any>, prefix?: string): Array<any>;
 
 /**
  * Subfolders of path p are recursively deleted. When reserve is true, the top-level folder is deleted
@@ -396,7 +406,7 @@ declare function thinkrequire(file: string): void;
  * @param source 
  * @param deep 
  */
-declare function clone(source: any, deep: any): void;
+declare function clone(source: any, deep?: any): void;
 
 /**
  * So that the target object inherits the source,
@@ -409,7 +419,7 @@ declare function clone(source: any, deep: any): void;
  * @param target 
  * @param deep 
  */
-declare function extend(source: any, target: any, deep: any): void;
+declare function extend(source: any, target: any, deep?: any): void;
 
 /**
  * User-defined Error
@@ -441,7 +451,7 @@ declare function preserveCamelCase(string: any): string;
  * @param options 
  * @return  
  */
-declare function camelCase(input: string, options: any): string;
+declare function camelCase(input: string, options?: any): string;
 
 /**
  * Checks if value is a callable function.
@@ -451,32 +461,141 @@ declare function camelCase(input: string, options: any): string;
  */
 declare function isFunction(value: any): value is (...args: any[]) => any;
 
-
+/**
+ * lodash.eq
+ * @param value 
+ * @param other 
+ */
 declare function eq(value: any, other: any): boolean;
+/**
+ * lodash.gt
+ * @param value 
+ * @param other 
+ */
 declare function gt(value: any, other: any): boolean;
+/**
+ * lodash.gte
+ * @param value 
+ * @param other 
+ */
 declare function gte(value: any, other: any): boolean;
+/**
+ * lodash.lt
+ * @param value 
+ * @param other 
+ */
 declare function lt(value: any, other: any): boolean;
+/**
+ * lodash.lte
+ * @param value 
+ * @param other 
+ */
 declare function lte(value: any, other: any): boolean;
+/**
+ * lodash.isArray
+ * @param value 
+ */
 declare function isArray<T>(value?: any): value is any[];
+/**
+ * lodash.isBoolean
+ * @param value 
+ */
 declare function isBoolean(value?: any): value is boolean;
+/**
+ * lodash.isBuffer
+ * @param value 
+ */
 declare function isBuffer(value?: any): boolean;
+/**
+ * lodash.isDate
+ * @param value 
+ */
 declare function isDate(value?: any): value is Date;
+/**
+ * lodash.isEqual
+ * @param value 
+ * @param other 
+ */
 declare function isEqual(value: any, other: any): boolean;
+/**
+ * lodash.isError
+ * @param value 
+ */
 declare function isError(value: any): value is Error;
+/**
+ * lodash.isMap
+ * @param value 
+ */
 declare function isMap(value?: any): value is Map<any, any>;
+/**
+ * lodash.isNull
+ * @param value 
+ */
 declare function isNull(value: any): value is null;
+/**
+ * lodash.isNaN
+ * @param value 
+ */
 declare function isNaN(value?: any): boolean;
+/**
+ * lodash.isUndefined
+ * @param value 
+ */
 declare function isUndefined(value: any): value is undefined;
+/**
+ * lodash.isNumber
+ * @param value 
+ */
 declare function isNumber(value?: any): value is number;
+/**
+ * lodash.isObject
+ * @param value 
+ */
 declare function isObject(value?: any): boolean;
+/**
+ * lodash.isRegExp
+ * @param value 
+ */
 declare function isRegExp(value?: any): value is RegExp;
+/**
+ * lodash.isSet
+ * @param value 
+ */
 declare function isSet(value?: any): value is Set<any>;
+/**
+ * lodash.isString
+ * @param value 
+ */
 declare function isString(value?: any): value is string;
+/**
+ * lodash.isSymbol
+ * @param value 
+ */
 declare function isSymbol(value: any): boolean;
+/**
+ * lodash.toString
+ * @param value 
+ */
 declare function toString(value: any): string;
+/**
+ * lodash.toInteger
+ * @param value 
+ */
 declare function toInteger(value: any): number;
+/**
+ * lodash.toNumber
+ * @param value 
+ */
 declare function toNumber(value: any): number;
+/**
+ * lodash.toArray
+ * @param value 
+ */
 declare function toArray<T>(value: T): Array<T[keyof T]>;
+/**
+ * lodash.union
+ * @param arrays 
+ */
 declare function union<T>(...arrays: Array<Array<T> | null | undefined>): T[];
 
 /**
