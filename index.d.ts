@@ -1,6 +1,6 @@
 // Type definitions for ./index.js
-// Project: [LIBRARY_URL_HERE] 
-// Definitions by: [YOUR_NAME_HERE] <[YOUR_URL_HERE]> 
+// Project: [think_lib] 
+// Definitions by: [richen] <[https://github.com/thinkkoa/think_lib]>
 // Definitions: https://github.com/borisyankov/DefinitelyTyped
 
 /**
@@ -111,7 +111,7 @@ declare function isPromise(value: any): boolean;
  * @param receiver 
  * @return  
  */
-declare function promisify(fn: Function, receiver: any): (...args: any) => void;
+declare function promisify(fn: Function, receiver: any): (...args: any) => Promise<any>;
 
 /**
  * Checks if fn is a GeneratorFunction
@@ -217,15 +217,12 @@ declare function rand(min: number, max: number): number;
 
 /**
  * Date time stamp and formatting
- * 
- * @param {any} date
- * @param {any} format
- * @returns {string | number}
- * @param date 
- * @param format 
- * @return  
+ *
+ * @param {(number | string)} [date]
+ * @param {string} [format]
+ * @returns {(string | number)}
  */
-declare function datetime(date: {} | string, format?: string): string;
+declare function datetime(date?: number | string, format?: string): string | number;
 
 /**
  * Determines whether value is an element of array arr,
@@ -399,27 +396,21 @@ declare function thinkrequire(file: string): void;
 
 /**
  * Copy the source, deep deep to true depth copy
- * 
- * @param {any} source
- * @param {any} deep
- * @returns {*}
- * @param source 
- * @param deep 
+ *
+ * @param {*} source
+ * @param {boolean} [deep=false]
  */
-declare function clone(source: any, deep?: any): void;
+declare function clone(source: any, deep?: boolean): void;
 
 /**
  * So that the target object inherits the source,
  * deep depth is true depth inheritance
- * @param {any} source
- * @param {any} target
- * @param {any} deep
- * @returns {*}
- * @param source 
- * @param target 
- * @param deep 
+ *
+ * @param {*} source
+ * @param {*} target
+ * @param {boolean} [deep=false]
  */
-declare function extend(source: any, target: any, deep?: any): void;
+declare function extend(source: any, target: any, deep?: boolean): void;
 
 /**
  * User-defined Error
@@ -429,13 +420,6 @@ declare function extend(source: any, target: any, deep?: any): void;
  * @param obj 
  */
 declare function err(obj: any): void;
-
-/**
- * 
- * @param obj 
- * @return  
- */
-declare function error(obj: any): Error;
 
 /**
  * @param {*} string
@@ -451,7 +435,10 @@ declare function preserveCamelCase(string: any): string;
  * @param options 
  * @return  
  */
-declare function camelCase(input: string, options?: any): string;
+interface CamelCaseOptionInterface {
+    pascalCase: boolean
+}
+declare function camelCase(input: string, options?: CamelCaseOptionInterface): string;
 
 /**
  * Checks if value is a callable function.
@@ -459,7 +446,7 @@ declare function camelCase(input: string, options?: any): string;
  * @param value The value to check.
  * @return Returns true if value is correctly classified, else false.
  */
-declare function isFunction(value: any): value is (...args: any[]) => any;
+declare function isFunction(value: any): value is (...args: any[]) => boolean;
 
 /**
  * lodash.eq
@@ -495,12 +482,12 @@ declare function lte(value: any, other: any): boolean;
  * lodash.isArray
  * @param value 
  */
-declare function isArray<T>(value?: any): value is any[];
+declare function isArray<T>(value?: any): boolean;
 /**
  * lodash.isBoolean
  * @param value 
  */
-declare function isBoolean(value?: any): value is boolean;
+declare function isBoolean(value?: any): boolean;
 /**
  * lodash.isBuffer
  * @param value 
@@ -510,7 +497,7 @@ declare function isBuffer(value?: any): boolean;
  * lodash.isDate
  * @param value 
  */
-declare function isDate(value?: any): value is Date;
+declare function isDate(value?: any): boolean;
 /**
  * lodash.isEqual
  * @param value 
@@ -521,17 +508,17 @@ declare function isEqual(value: any, other: any): boolean;
  * lodash.isError
  * @param value 
  */
-declare function isError(value: any): value is Error;
+declare function isError(value: any): boolean;
 /**
  * lodash.isMap
  * @param value 
  */
-declare function isMap(value?: any): value is Map<any, any>;
+declare function isMap(value?: any): boolean;
 /**
  * lodash.isNull
  * @param value 
  */
-declare function isNull(value: any): value is null;
+declare function isNull(value: any): boolean;
 /**
  * lodash.isNaN
  * @param value 
@@ -541,12 +528,12 @@ declare function isNaN(value?: any): boolean;
  * lodash.isUndefined
  * @param value 
  */
-declare function isUndefined(value: any): value is undefined;
+declare function isUndefined(value: any): boolean;
 /**
  * lodash.isNumber
  * @param value 
  */
-declare function isNumber(value?: any): value is number;
+declare function isNumber(value?: any): boolean;
 /**
  * lodash.isObject
  * @param value 
@@ -556,17 +543,17 @@ declare function isObject(value?: any): boolean;
  * lodash.isRegExp
  * @param value 
  */
-declare function isRegExp(value?: any): value is RegExp;
+declare function isRegExp(value?: any): boolean;
 /**
  * lodash.isSet
  * @param value 
  */
-declare function isSet(value?: any): value is Set<any>;
+declare function isSet(value?: any): boolean;
 /**
  * lodash.isString
  * @param value 
  */
-declare function isString(value?: any): value is string;
+declare function isString(value?: any): boolean;
 /**
  * lodash.isSymbol
  * @param value 
@@ -580,6 +567,11 @@ declare function toString(value: any): string;
 /**
  * lodash.toInteger
  * @param value 
+ */
+declare function toInt(value: any): number;
+/**
+ * lodash.toInteger
+ * @param value
  */
 declare function toInteger(value: any): number;
 /**

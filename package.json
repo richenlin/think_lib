@@ -1,6 +1,6 @@
 {
   "name": "think_lib",
-  "version": "2.2.4",
+  "version": "2.2.10",
   "description": "ThinkKoa functions Libs.",
   "main": "index.js",
   "scripts": {
@@ -29,9 +29,8 @@
     "mocha": "^6.2.0"
   },
   "dependencies": {
-    "bluebird": "^3.5.5",
     "co": "^4.6.0",
     "lodash": "^4.17.15",
-    "typescript": "^3.5.3"
+    "moment": "^2.24.0"
   }
 }

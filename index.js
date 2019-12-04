@@ -10,10 +10,10 @@
 const fs = require('fs');
 const co = require('co');
 const path = require('path');
-const util = require('util');
+// const util = require('util');
 const crypto = require('crypto');
 const lodash = require('lodash');
-const Promise = require('bluebird');
+const moment = require('moment');
 
 /**
  * Formatted console.log output
@@ -362,6 +362,16 @@ function rand(min, max) {
  * @param {any} format
  * @returns {string | number}
  */
+const dateFn = function (f) {
+    // let Week = ['日', '一', '二', '三', '四', '五', '六'];
+    f = f.replace(/yyyy/, 'YYYY');
+    f = f.replace(/yy/, 'YY');
+    f = f.replace(/mm/, 'MM');
+    f = f.replace(/mi|MI/, 'mm');
+    // f = f.replace(/w|W/g, Week[d.getDay()]);
+    f = f.replace(/dd/, 'DD');
+    return f;
+};
 function datetime(date, format) {
     if (format === undefined) {
         //datetime() => now timestamp
@@ -373,31 +383,23 @@ function datetime(date, format) {
         }
         return NaN;
     } else {
-        format = format || 'yyyy-mm-dd hh:mi:ss';
-        let fn = function (d, f) {
-            let Week = ['日', '一', '二', '三', '四', '五', '六'];
-            f = f.replace(/yyyy|YYYY/, d.getFullYear());
-            f = f.replace(/yy|YY/, d.getYear() % 100 > 9 ? (d.getYear() % 100).toString() : '0' + d.getYear() % 100);
-            f = f.replace(/mi|MI/, d.getMinutes() > 9 ? d.getMinutes().toString() : '0' + d.getMinutes());
-            f = f.replace(/mm|MM/, d.getMonth() + 1 > 9 ? (d.getMonth() + 1).toString() : '0' + (d.getMonth() + 1));
-            f = f.replace(/m|M/g, d.getMonth() + 1);
-            f = f.replace(/w|W/g, Week[d.getDay()]);
-            f = f.replace(/dd|DD/, d.getDate() > 9 ? d.getDate().toString() : '0' + d.getDate());
-            f = f.replace(/d|D/g, d.getDate());
-            f = f.replace(/hh|HH/, d.getHours() > 9 ? d.getHours().toString() : '0' + d.getHours());
-            f = f.replace(/h|H/g, d.getHours());
-            f = f.replace(/ss|SS/, d.getSeconds() > 9 ? d.getSeconds().toString() : '0' + d.getSeconds());
-            return f;
-        };
+        if (format) {
+            format = dateFn(format);
+        } else {
+            format = 'YYYY-MM-DD hh:mm:ss.SSS';
+        }
+
         if (date && lodash.isNumber(date)) {
-            let newDate = new Date();
-            newDate.setTime(date * 1000);
-            return fn(newDate, format);
+            if (date < 10000000000) {
+                return moment.unix(date).format(format);
+            } else {
+                return moment(date).format(format);
+            }
         }
         if (date && lodash.isString(date)) {
-            return fn(new Date(Date.parse(date)), format);
+            return moment(new Date(Date.parse(date))).format(format);
         }
-        return fn(new Date(), format);
+        return moment().format(format);
     }
 }
 
@@ -730,21 +732,6 @@ function extend(source, target, deep) {
 }
 
 /**
- * User-defined Error
- *
- * @param {*} code
- * @param {*} message
- */
-const err = function (obj) {
-    Object.assign(this, obj);
-    Promise.OperationalError.call(this, obj.message || '');
-};
-util.inherits(err, Promise.OperationalError);
-function error(obj) {
-    return new err(obj);
-}
-
-/**
  * 
  * @param {*} string 
  */
@@ -858,6 +845,7 @@ module.exports = new Proxy({
     isTrueEmpty: isTrueEmpty,
     toString: lodash.toString,
     toInt: lodash.toInteger,
+    toInteger: lodash.toInteger,
     toNumber: lodash.toNumber,
     toArray: lodash.toArray,
     escapeHtml: escapeHtml,
@@ -894,17 +882,16 @@ module.exports = new Proxy({
     extend: extend,
     define: define,
     toFastProperties: toFastProperties,
-    Error: error,
     camelCase: camelCase
 }, {
-        set: function (target, key, value, receiver) {
-            if (Reflect.get(target, key, receiver) === undefined) {
-                return Reflect.set(target, key, value, receiver);
-            } else {
-                throw Error('Cannot redefine getter-only property');
-            }
-        },
-        deleteProperty: function (target, key) {
-            throw Error('Cannot delete getter-only property');
+    set: function (target, key, value, receiver) {
+        if (Reflect.get(target, key, receiver) === undefined) {
+            return Reflect.set(target, key, value, receiver);
+        } else {
+            throw Error('Cannot redefine getter-only property');
         }
-    });
+    },
+    deleteProperty: function (target, key) {
+        throw Error('Cannot delete getter-only property');
+    }
+});
