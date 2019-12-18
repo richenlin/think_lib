@@ -201,7 +201,7 @@ declare function md5(value: string): string;
  * @param value 
  * @param salt? 
  */
-declare function md5Salt(value: string, salt?: string): void;
+declare function md5Salt(value: string, salt?: string): string;
 
 /**
  * Pseudo-random access min and max range of integers
@@ -392,7 +392,7 @@ declare function getDefer<T>(): Promise<T>;
  * @returns {*}
  * @param file 
  */
-declare function thinkrequire(file: string): void;
+declare function thinkrequire(file: string): any;
 
 /**
  * Copy the source, deep deep to true depth copy
@@ -400,7 +400,7 @@ declare function thinkrequire(file: string): void;
  * @param {*} source
  * @param {boolean} [deep=false]
  */
-declare function clone(source: any, deep?: boolean): void;
+declare function clone<T>(source: T, deep?: boolean): T;
 
 /**
  * So that the target object inherits the source,
@@ -410,16 +410,7 @@ declare function clone(source: any, deep?: boolean): void;
  * @param {*} target
  * @param {boolean} [deep=false]
  */
-declare function extend(source: any, target: any, deep?: boolean): void;
-
-/**
- * User-defined Error
- * 
- * @param {*} code
- * @param {*} message
- * @param obj 
- */
-declare function err(obj: any): void;
+declare function extend<T>(source: T, target: any, deep?: boolean): T;
 
 /**
  * @param {*} string
