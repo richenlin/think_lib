@@ -586,6 +586,8 @@ declare function union<T>(...arrays: Array<Array<T> | null | undefined>): T[];
  * @param str 
  */
 // declare function echo(str: string): void;
-export var echo: Function;
+declare const echo: Function;
+
+declare const sep: string;
 
 declare module "think_lib" { }
