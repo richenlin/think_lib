@@ -10,7 +10,7 @@ const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
 
-const lib = require('../index');
+const lib = require('../dist/index');
 
 describe('think_lib', function () {
     before(function () { });
@@ -432,51 +432,51 @@ describe('think_lib', function () {
         assert.deepEqual(lib.arrRemove([1, 2, 3, 4, 5, 2, 34, 2], 2), [1, 2, 4, 5, 2, 34, 2]);
     });
     it("isFile", function () {
-        assert.equal(lib.isFile(require.resolve("../index.js")), true);
+        assert.equal(lib.isFile(require.resolve("./test.txt")), true);
     });
     it("isDir", function () {
-        assert.equal(lib.isDir(require.resolve("../index.js")), false);
+        assert.equal(lib.isDir(require.resolve("./test.txt")), false);
     });
     it("isWritable", function () {
-        return lib.writeFile(path.resolve("./test/.test.js"), 'test').then(() => {
-            assert.equal(lib.isWritable(path.resolve("./test/.test.js")), true);
-            return lib.rmFile(path.resolve("./test/.test.js"));
+        return lib.writeFile(path.resolve("./test.txt"), 'test').then(() => {
+            assert.equal(lib.isWritable(path.resolve("./test.txt")), true);
+            return lib.rmFile(path.resolve("./test.txt"));
         });
     });
     it("chmod", function () {
-        return lib.writeFile(path.resolve("./test/.test1.js"), 'test').then(() => {
-            assert.ok(lib.chmod(path.resolve("./test/.test1.js")) == undefined);
-            return lib.rmFile(path.resolve("./test/.test1.js"));
+        return lib.writeFile(path.resolve("./test.txt"), 'test').then(() => {
+            assert.ok(lib.chmod(path.resolve("./test.txt")) == true);
+            return lib.rmFile(path.resolve("./test.txt"));
         });
     });
     it("readFile", function () {
-        return lib.writeFile(path.resolve("./test/.test2.js"), 'test').then(() => {
-            return lib.readFile(path.resolve("./test/.test2.js")).then(text => {
+        return lib.writeFile(path.resolve("./test.txt"), 'test').then(() => {
+            return lib.readFile(path.resolve("./test.txt")).then(text => {
                 assert.equal(text, 'test');
-                return lib.rmFile(path.resolve("./test/.test2.js"));
+                return lib.rmFile(path.resolve("./test.txt"));
             });
         });
     });
     it("writeFile", function () {
-        return lib.writeFile(path.resolve("./test/.test3.js"), 'test').then(() => {
-            return lib.readFile(path.resolve("./test/.test3.js")).then(text => {
+        return lib.writeFile(path.resolve("./test.txt"), 'test').then(() => {
+            return lib.readFile(path.resolve("./test.txt")).then(text => {
                 assert.equal(text, 'test');
-                return lib.rmFile(path.resolve("./test/.test3.js"));
+                return lib.rmFile(path.resolve("./test.txt"));
             });
         });
     });
     it("reFile", function () {
-        return lib.writeFile(path.resolve("./test/.test4.js"), 'test').then(() => {
-            return lib.reFile(path.resolve("./test/.test4.js"), path.resolve("./test/.test4.js")).then(() => {
-                assert.equal(lib.isFile(path.resolve("./test/.test4.js")), true);
-                return lib.rmFile(path.resolve("./test/.test4.js"));
+        return lib.writeFile(path.resolve("./test.txt"), 'test').then(() => {
+            return lib.reFile(path.resolve("./test.txt"), path.resolve("./test.txt")).then(() => {
+                assert.equal(lib.isFile(path.resolve("./test.txt")), true);
+                return lib.rmFile(path.resolve("./test.txt"));
             });
         });
     });
     it("rmFile", function () {
-        return lib.writeFile(path.resolve("./test/.test5.js"), 'test').then(() => {
-            return lib.reFile(path.resolve("./test/.test5.js"), path.resolve("./test/.test5.js")).then(() => {
-                assert.ok(lib.rmFile(path.resolve("./test/.test5.js")));
+        return lib.writeFile(path.resolve("./test.txt"), 'test').then(() => {
+            return lib.reFile(path.resolve("./test.txt"), path.resolve("./test.txt")).then(() => {
+                assert.ok(lib.rmFile(path.resolve("./test.txt")));
             });
         });
     });
@@ -513,7 +513,7 @@ describe('think_lib', function () {
         assert.equal(lib.isPromise(lib.getDefer().promise), true);
     });
     it("thinkrequire", function () {
-        assert.equal(lib.isObject(lib.require(path.resolve("./index.js"))), true);
+        assert.equal(lib.isObject(lib.thinkrequire(path.resolve("./dist/index.js"))), true);
     });
     it("clone", function () {
         let data = { 'aa': { 'qq': 55555 } };

@@ -2,6 +2,7 @@
 .DS_Store
 node_modules
 coverage
+dist
+test/logs
 npm-debug.log
-yarn.lock
 yarn-error.log
