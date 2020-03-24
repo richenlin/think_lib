@@ -1,16 +1,17 @@
+/* eslint-disable func-style */
 /**
  * @ author: richen
  * @ copyright: Copyright (c) - <richenlin(at)gmail.com>
  * @ license: MIT
- * @ version: 2020-03-25 01:55:30
+ * @ version: 2020-03-25 02:54:22
  */
-import fs from "fs";
-import co from "co";
-import path from "path";
-import crypto from "crypto";
-import lodash from "lodash";
-import moment from "moment";
-const murmur = require("murmurhash");
+const fs = require('fs');
+const co = require('co');
+const path = require('path');
+const crypto = require('crypto');
+const lodash = require('lodash');
+const moment = require('moment');
+const murmur = require('murmurhash');
 
 /**
  * Formatted console.log output
@@ -18,7 +19,7 @@ const murmur = require("murmurhash");
  * @param {*} str 
  * @returns {void}
  */
-(<any>global).echo = function (str: any) {
+global.echo = function (str) {
     const date = datetime('', '');
     console.log('----------' + date + '----------');
     console.log(str);
@@ -32,11 +33,11 @@ const murmur = require("murmurhash");
  * @export
  * @param {*} obj
  */
-export function toFastProperties(obj: any): void {
+function toFastProperties(obj) {
     // eslint-disable-next-line no-empty-function
-    const f: any = function f() { };
+    const f = function f() { };
     f.prototype = obj;
-    // tslint:disable-next-line: no-unused-expression
+    // eslint-disable-next-line no-new
     new f();
 }
 
@@ -51,7 +52,7 @@ export function toFastProperties(obj: any): void {
  * @param {boolean} [setter=false]
  * @returns
  */
-export function define(obj: any, property: string, value: any, setter = false): void {
+function define(obj, property, value, setter = false) {
     if (setter) {
         Object.defineProperty(obj, property, {
             value,
@@ -61,7 +62,7 @@ export function define(obj: any, property: string, value: any, setter = false): 
         });
     } else {
         Object.defineProperty(obj, property, {
-            // tslint:disable-next-line: object-literal-shorthand
+            // tslint:disable-next-line-literal-shorthand
             get: function () {
                 return value;
             },
@@ -78,7 +79,7 @@ export function define(obj: any, property: string, value: any, setter = false): 
  * @param {*} value
  * @returns {boolean}
  */
-export function isNumberString(value: any): boolean {
+function isNumberString(value) {
     const numberReg = /^((-?\d*\.?\d*(?:e[+-]?\d*(?:\d?\.?|\.?\d?)\d*)?)|(0[0-7]+)|(0x[0-9a-f]+))$/i;
     return lodash.isString(value) && !isEmpty(value) && numberReg.test(value);
 }
@@ -91,7 +92,7 @@ export function isNumberString(value: any): boolean {
  * @param {*} value
  * @returns {boolean}
  */
-export function isJSONObj(value: any): boolean {
+function isJSONObj(value) {
     return lodash.isPlainObject(value) || lodash.isArray(value);
 }
 
@@ -103,7 +104,7 @@ export function isJSONObj(value: any): boolean {
  * @param {*} value
  * @returns {boolean}
  */
-export function isJSONStr(value: any): boolean {
+function isJSONStr(value) {
     if (!lodash.isString(value)) {
         return false;
     }
@@ -122,7 +123,7 @@ export function isJSONStr(value: any): boolean {
  * @param {*} value
  * @returns {boolean}
  */
-export function isTrueEmpty(value: any): boolean {
+function isTrueEmpty(value) {
     if (value === undefined || value === null || value === '') {
         return true;
     }
@@ -140,7 +141,7 @@ export function isTrueEmpty(value: any): boolean {
  * @param {*} value
  * @returns {boolean}
  */
-export function isEmpty(value: any): boolean {
+function isEmpty(value) {
     if (value === undefined || value === null || value === '') {
         return true;
     } else if (lodash.isString(value)) {
@@ -168,7 +169,7 @@ export function isEmpty(value: any): boolean {
  * @param {string} property
  * @returns {boolean}
  */
-export function hasOwn(obj: object, property: string): boolean {
+function hasOwn(obj, property) {
     return Object.prototype.hasOwnProperty.call(obj, property);
 }
 
@@ -179,7 +180,7 @@ export function hasOwn(obj: object, property: string): boolean {
  * @param {*} value
  * @returns {boolean}
  */
-export function isPromise(value: any): boolean {
+function isPromise(value) {
     return !!(value && value.catch && typeof value.then === 'function');
 }
 
@@ -191,10 +192,10 @@ export function isPromise(value: any): boolean {
  * @param {object} [receiver]
  * @returns {() => Promise<any>}
  */
-export function promisify(fn: Function, receiver?: object): () => Promise<any> {
+function promisify(fn, receiver) {
     return function (...args) {
         return new Promise(function (resolve, reject) {
-            fn.apply(receiver, [...args, function (err: any, res: any) {
+            fn.apply(receiver, [...args, function (err, res) {
                 return err ? reject(err) : resolve(res);
             }]);
         });
@@ -208,7 +209,7 @@ export function promisify(fn: Function, receiver?: object): () => Promise<any> {
  * @param {*} fn
  * @returns {boolean}
  */
-export function isGenerator(fn: any): boolean {
+function isGenerator(fn) {
     return !!(fn && typeof fn === 'function' && fn.constructor && fn.constructor.name === 'GeneratorFunction');
 }
 
@@ -219,7 +220,7 @@ export function isGenerator(fn: any): boolean {
  * @param {*} fn
  * @returns {boolean}
  */
-export function isAsyncFunction(fn: any): boolean {
+function isAsyncFunction(fn) {
     return !!(fn && typeof fn === 'function' && fn.constructor && 'AsyncFunction' === fn.constructor.name);
 }
 
@@ -230,7 +231,7 @@ export function isAsyncFunction(fn: any): boolean {
  * @param {Function} fn
  * @returns
  */
-export function generatorToPromise(fn: GeneratorFunction) {
+function generatorToPromise(fn) {
     if (typeof fn !== 'function') {
         throw Error('fn is not a function');
     }
@@ -249,7 +250,7 @@ export function generatorToPromise(fn: GeneratorFunction) {
  * @param {boolean} [strict=true]
  * @returns {boolean}
  */
-export function isClass(obj: any, strict = true): boolean {
+function isClass(obj, strict = true) {
     if (typeof obj !== 'function') {
         return false;
     }
@@ -301,14 +302,14 @@ export function isClass(obj: any, strict = true): boolean {
  * @param {string} value
  * @returns {string}
  */
-export function escapeHtml(value: string): string {
-    const htmlMaps: any = {
+function escapeHtml(value) {
+    const htmlMaps = {
         '<': '&lt;',
         '>': '&gt;',
         '"': '&quote;',
         '\'': '&#39;'
     };
-    return (`${value}`).replace(/[<>'"]/g, function (a: any) {
+    return (`${value}`).replace(/[<>'"]/g, function (a) {
         return htmlMaps[a];
     });
 }
@@ -320,8 +321,8 @@ export function escapeHtml(value: string): string {
  * @param {string} value
  * @returns {string}
  */
-export function escapeSpecial(value: string): string {
-    const specialMaps: any = {
+function escapeSpecial(value) {
+    const specialMaps = {
         '&lt;': '<',
         '&gt;': '>',
         '&quote;': '"',
@@ -341,7 +342,7 @@ export function escapeSpecial(value: string): string {
  * @param {*} value
  * @returns {string}
  */
-export function ucFirst(value: any): string {
+function ucFirst(value) {
     value = lodash.toString(value || '');
     return value.slice(0, 1).toUpperCase() + value.slice(1).toLowerCase();
 }
@@ -353,7 +354,7 @@ export function ucFirst(value: any): string {
  * @param {string} value
  * @returns {string}
  */
-export function md5(value: string): string {
+function md5(value) {
     const ins = crypto.createHash('md5');
     ins.update(value);
     return ins.digest('hex');
@@ -367,7 +368,7 @@ export function md5(value: string): string {
  * @param {string} [salt='abcdefghijklmnopqrstuvwxyz1234567890']
  * @returns {string}
  */
-export function md5Salt(value: string, salt = 'abcdefghijklmnopqrstuvwxyz1234567890'): string {
+function md5Salt(value, salt = 'abcdefghijklmnopqrstuvwxyz1234567890') {
     const ins = crypto.createHash('md5');
     value = value + salt.slice(value.length % salt.length, salt.length);
     ins.update(value);
@@ -382,12 +383,12 @@ export function md5Salt(value: string, salt = 'abcdefghijklmnopqrstuvwxyz1234567
  * @param {number} max
  * @returns {number}
  */
-export function rand(min: number, max: number): number {
+function rand(min, max) {
     return Math.floor(min + Math.random() * (max - min + 1));
 }
 
 
-const dateFn = function (f: string) {
+const dateFn = function (f) {
     // let Week = ['日', '一', '二', '三', '四', '五', '六'];
     f = f.replace(/yyyy/, 'YYYY');
     f = f.replace(/yy/, 'YY');
@@ -407,7 +408,7 @@ const dateFn = function (f: string) {
  * @param {number} [offset] defaults  8
  * @returns {(number | string)}
  */
-export function datetime(date: number | string | undefined, format?: string, offset = 8): number | string {
+function datetime(date, format, offset = 8) {
     if (format === undefined) {
         //datetime() => now timestamp
         if (lodash.isString(date)) { //datetime('2017-01-01') => timestamp
@@ -445,10 +446,10 @@ export function datetime(date: number | string | undefined, format?: string, off
  * @param {any[]} arr
  * @returns {boolean}
  */
-export function inArray(value: any, arr: any[]): boolean {
+function inArray(value, arr) {
     const len = arr.length;
     for (let i = 0; i < len; i++) {
-        // tslint:disable-next-line: triple-equals
+        // eslint-disable-next-line eqeqeq
         if (arr[i] == value) {
             return true;
         }
@@ -464,7 +465,7 @@ export function inArray(value: any, arr: any[]): boolean {
  * @param {number} index
  * @returns {any[]}
  */
-export function arrRemove(arr: any[], index: number): any[] {
+function arrRemove(arr, index) {
     return lodash.remove(arr, function (n, i) {
         return i !== index;
     });
@@ -477,7 +478,7 @@ export function arrRemove(arr: any[], index: number): any[] {
  * @param {string} p
  * @returns {boolean}
  */
-export function isFile(p: string): boolean {
+function isFile(p) {
     if (!fs.existsSync(p)) {
         return false;
     }
@@ -496,7 +497,7 @@ export function isFile(p: string): boolean {
  * @param {string} p
  * @returns {boolean}
  */
-export function isDir(p: string): boolean {
+function isDir(p) {
     if (!fs.existsSync(p)) {
         return false;
     }
@@ -515,7 +516,7 @@ export function isDir(p: string): boolean {
  * @param {string} p
  * @returns {boolean}
  */
-export function isWritable(p: string): boolean {
+function isWritable(p) {
     if (!fs.existsSync(p)) {
         return false;
     }
@@ -539,7 +540,7 @@ export function isWritable(p: string): boolean {
  * @param {string} [mode]
  * @returns {boolean}
  */
-export function chmod(p: string, mode?: string): boolean {
+function chmod(p, mode) {
     try {
         mode = mode || '0777';
         if (!fs.existsSync(p)) {
@@ -561,7 +562,7 @@ export function chmod(p: string, mode?: string): boolean {
  * @param {string} [enc] defaults 'utf8'
  * @returns {Promise<any>}
  */
-export function readFile(filename: string, enc?: string): Promise<any> {
+function readFile(filename, enc) {
     return new Promise(function (fulfill, reject) {
         fs.readFile(filename, enc || 'utf8', function (err, res) {
             return err ? reject(err) : fulfill(res);
@@ -578,9 +579,9 @@ export function readFile(filename: string, enc?: string): Promise<any> {
  * @param {string} data
  * @returns {Promise<any>}
  */
-export function writeFile(filename: string, data: string): Promise<any> {
+function writeFile(filename, data) {
     return new Promise(function (fulfill, reject) {
-        fs.writeFile(filename, data, (err: any) => {
+        fs.writeFile(filename, data, (err) => {
             return err ? reject(err) : fulfill();
         });
     });
@@ -595,7 +596,7 @@ export function writeFile(filename: string, data: string): Promise<any> {
  * @param {string} nfilename
  * @returns {Promise<any>}
  */
-export function reFile(filename: string, nfilename: string): Promise<any> {
+function reFile(filename, nfilename) {
     return new Promise(function (fulfill, reject) {
         fs.rename(filename, nfilename, function (err) {
             return err ? reject(err) : fulfill();
@@ -611,7 +612,7 @@ export function reFile(filename: string, nfilename: string): Promise<any> {
  * @param {string} p
  * @returns {boolean}
  */
-export function rmFile(p: string): boolean {
+function rmFile(p) {
     if (isFile(p)) {
         fs.unlinkSync(p);
         return true;
@@ -626,17 +627,16 @@ export function rmFile(p: string): boolean {
  * @param {number} mode
  * @returns {boolean}
  */
-export function mkDir(p: string, mode = '0777'): boolean {
+function mkDir(p, mode = '0777') {
     try {
         if (fs.existsSync(p)) {
             chmod(p, mode);
-            return true;
         } else {
             if (mkDir(path.dirname(p))) {
                 fs.mkdirSync(p, mode);
-                return true;
             }
         }
+        return true;
     } catch (error) {
         return false;
     }
@@ -653,10 +653,10 @@ export function mkDir(p: string, mode = '0777'): boolean {
  * @param {string} [prefix]
  * @returns {any[]}
  */
-export function readDir(p: string, filter?: any, files?: any[], prefix?: string): any[] {
+function readDir(p, filter, files, prefix) {
     prefix = prefix || '';
     files = files || [];
-    filter = filter || function (x: any) {
+    filter = filter || function (x) {
         return x[0] !== '.';
     };
 
@@ -682,11 +682,11 @@ export function readDir(p: string, filter?: any, files?: any[], prefix?: string)
  * @param {boolean} reserve
  * @returns {Promise<any>}
  */
-export function rmDir(p: string, reserve?: boolean): Promise<any> {
+function rmDir(p, reserve) {
     if (!isDir(p)) {
         return Promise.resolve(null);
     }
-    const deferred: any = getDefer();
+    const deferred = getDefer();
     fs.readdir(p, function (err, files) {
         if (err) {
             return deferred.reject(err);
@@ -698,7 +698,7 @@ export function rmDir(p: string, reserve?: boolean): Promise<any> {
                 if (isDir(filePath)) {
                     return rmDir(filePath, false);
                 } else {
-                    const defer: any = getDefer();
+                    const defer = getDefer();
                     fs.unlink(filePath, function (er) {
                         return er ? defer.reject(er) : defer.resolve();
                     });
@@ -710,7 +710,7 @@ export function rmDir(p: string, reserve?: boolean): Promise<any> {
 
         return spromise.then(function () {
             if (!reserve) {
-                const deferr: any = getDefer();
+                const deferr = getDefer();
                 fs.rmdir(p, function (e) {
                     return e ? deferr.reject(e) : deferr.resolve();
                 });
@@ -733,8 +733,8 @@ export function rmDir(p: string, reserve?: boolean): Promise<any> {
  * @export
  * @returns {*}
  */
-export function getDefer(): any {
-    const defer: any = {};
+function getDefer() {
+    const defer = {};
     defer.promise = new Promise(function (resolve, reject) {
         defer.resolve = resolve;
         defer.reject = reject;
@@ -748,7 +748,7 @@ export function getDefer(): any {
  * @param {string} file
  * @returns {*}
  */
-export function thinkrequire(file: string) {
+function thinkrequire(file) {
     try {
         let obj = require(file);
         obj = (obj && obj.__esModule && obj.default) ? obj.default : obj;
@@ -770,7 +770,7 @@ export function thinkrequire(file: string) {
  * @param {boolean} [deep]
  * @returns {T}
  */
-export function clone<T>(source: T, deep?: boolean): T {
+function clone(source, deep) {
     if (deep) {
         return lodash.cloneDeep(source);
     } else {
@@ -789,7 +789,7 @@ export function clone<T>(source: T, deep?: boolean): T {
  * @param {boolean} [deep]
  * @returns {T}
  */
-export function extend<T>(source: T, target: object, deep?: boolean): T {
+function extend(source, target, deep) {
     if (deep) {
         return lodash.merge(lodash.cloneDeep(source), target);
     } else {
@@ -801,7 +801,7 @@ export function extend<T>(source: T, target: object, deep?: boolean): T {
  * 
  * @param string string
  */
-const preserveCamelCase = function (string: string) {
+const preserveCamelCase = function (string) {
     let isLastCharLower = false;
     let isLastCharUpper = false;
     let isLastLastCharUpper = false;
@@ -838,17 +838,15 @@ const preserveCamelCase = function (string: string) {
  * @param {boolean} [pascalCase=false]
  * @returns {string}
  */
-export function camelCase(input: string, pascalCase = false): string {
+function camelCase(input, pascalCase = false) {
     if (!(typeof input === 'string' || Array.isArray(input))) {
         throw new TypeError('Expected the input to be `string | string[]`');
     }
 
-    const postProcess = (x: string) => pascalCase ? x.charAt(0).toUpperCase() + x.slice(1) : x;
+    const postProcess = (x) => pascalCase ? x.charAt(0).toUpperCase() + x.slice(1) : x;
 
     if (Array.isArray(input)) {
-        input = input.map((x) => x.trim())
-            .filter((x) => x.length)
-            .join('-');
+        input = input.map((x) => x.trim()).filter((x) => x.length).join('-');
     } else {
         input = input.trim();
     }
@@ -867,11 +865,7 @@ export function camelCase(input: string, pascalCase = false): string {
         input = preserveCamelCase(input);
     }
 
-    input = input
-        .replace(/^[_.\- ]+/, '')
-        .toLowerCase()
-        .replace(/[_.\- ]+(\w|$)/g, (_, p1) => p1.toUpperCase())
-        .replace(/\d+(\w|$)/g, (m) => m.toUpperCase());
+    input = input.replace(/^[_.\- ]+/, '').toLowerCase().replace(/[_.\- ]+(\w|$)/g, (_, p1) => p1.toUpperCase()).replace(/\d+(\w|$)/g, (m) => m.toUpperCase());
 
     return postProcess(input);
 }
@@ -884,7 +878,7 @@ export function camelCase(input: string, pascalCase = false): string {
  * @param {Number} ver default is 2
  * @return {Number} hash value
  */
-export function murmurHash(value: string, seed = 97, ver = 2) {
+function murmurHash(value, seed = 97, ver = 2) {
     if (ver === 3) {
         return murmur.v3(value, seed);
     } else {
@@ -892,17 +886,89 @@ export function murmurHash(value: string, seed = 97, ver = 2) {
     }
 }
 
-/**
- * 
- */
-export const sep = path.sep;
-
-/**
- * 
- */
-export {
-    eq, gt, gte, lt, lte, isArray, isBoolean, isBuffer, isDate, isEqual, isError,
-    isFunction, isMap, isNull, isNaN, isUndefined, isNumber, isPlainObject as isObject,
-    isRegExp, isRegExp as isRegexp, isSet, isString, isSymbol, toString, toArray, toInteger,
-    toInteger as toInt, toNumber, union as arrUnique, concat
-} from "lodash";
+module.exports = new Proxy({
+    sep: path.sep,
+    eq: lodash.eq,
+    gt: lodash.gt,
+    gte: lodash.gte,
+    lt: lodash.lt,
+    lte: lodash.lte,
+    isArray: lodash.isArray,
+    isBoolean: lodash.isBoolean,
+    isBuffer: lodash.isBuffer,
+    isDate: lodash.isDate,
+    isEqual: lodash.isEqual,
+    isError: lodash.isError,
+    isFunction: lodash.isFunction,
+    isClass: isClass,
+    isMap: lodash.isMap,
+    isNull: lodash.isNull,
+    isNaN: lodash.isNaN,
+    isUndefined: lodash.isUndefined,
+    isNumber: lodash.isNumber,
+    isObject: lodash.isPlainObject,
+    isRegExp: lodash.isRegExp,
+    isRegexp: lodash.isRegExp,
+    isSet: lodash.isSet,
+    isString: lodash.isString,
+    isSymbol: lodash.isSymbol,
+    isNumberString: isNumberString,
+    isJSONObj: isJSONObj,
+    isJSONStr: isJSONStr,
+    isEmpty: isEmpty,
+    isTrueEmpty: isTrueEmpty,
+    toString: lodash.toString,
+    toInt: lodash.toInteger,
+    toInteger: lodash.toInteger,
+    toNumber: lodash.toNumber,
+    toArray: lodash.toArray,
+    escapeHtml: escapeHtml,
+    escapeSpecial: escapeSpecial,
+    ucFirst: ucFirst,
+    md5: md5,
+    md5Salt: md5Salt,
+    murmurHash: murmurHash,
+    rand: rand,
+    datetime: datetime,
+    inArray: inArray,
+    arrUnique: lodash.union,
+    arrRemove: arrRemove,
+    isFile: isFile,
+    isDir: isDir,
+    isWritable: isWritable,
+    chmod: chmod,
+    readFile: readFile,
+    writeFile: writeFile,
+    reFile: reFile,
+    rmFile: rmFile,
+    mkDir: mkDir,
+    readDir: readDir,
+    rmDir: rmDir,
+    hasOwn: hasOwn,
+    isPromise: isPromise,
+    isAsyncFunction: isAsyncFunction,
+    promisify: promisify,
+    isGenerator: isGenerator,
+    generatorToPromise: generatorToPromise,
+    defer: getDefer,
+    getDefer: getDefer,
+    require: thinkrequire,
+    thinkrequire: thinkrequire,
+    clone: clone,
+    extend: extend,
+    define: define,
+    toFastProperties: toFastProperties,
+    camelCase: camelCase
+}, {
+    set: function (target, key, value, receiver) {
+        if (Reflect.get(target, key, receiver) === undefined) {
+            return Reflect.set(target, key, value, receiver);
+        } else {
+            throw Error('Cannot redefine getter-only property');
+        }
+    },
+    // eslint-disable-next-line no-unused-vars
+    deleteProperty: function (target, key) {
+        throw Error('Cannot delete getter-only property');
+    }
+});

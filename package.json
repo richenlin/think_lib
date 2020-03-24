@@ -1,14 +1,13 @@
 {
   "name": "think_lib",
-  "version": "2.4.0",
+  "version": "2.4.7",
   "description": "ThinkKoa functions Libs.",
-  "main": "./dist/index.js",
+  "main": "index.js",
   "scripts": {
-    "test": "npm run tslint && npm run test-cov",
-    "test-cov": "npm run build && mocha -- -t 50000 --recursive  -R spec test/",
-    "build": "del-cli --force dist && tsc",
-    "prepublishOnly": "npm test && npm run build",
-    "tslint": "tslint 'src/**/*.ts'"
+    "test": "npm run eslint && npm run test-cov",
+    "test-cov": "mocha -- -t 50000 --recursive  -R spec test/",
+    "prepublish": "npm test",
+    "eslint": "eslint index.js"
   },
   "engines": {
     "node": ">8.0.0"
@@ -23,24 +22,13 @@
   },
   "homepage": "https://github.com/thinkkoa/think_lib",
   "devDependencies": {
-    "@types/co": "^4.6.2",
-    "@types/lodash": "^4.x.x",
-    "@types/node": "^12.x.x",
-    "@typescript-eslint/eslint-plugin": "^2.23.0",
-    "@typescript-eslint/parser": "^2.23.0",
-    "del-cli": "^3.0.0",
     "eslint": "^6.8.0",
-    "mocha": "^6.2.0",
-    "ts-node": "^8.6.2",
-    "tslint": "^6.1.0",
-    "tslint-config-alloy": "^0.2.1",
-    "typescript": "^3.8.3"
+    "mocha": "^6.2.0"
   },
   "dependencies": {
     "co": "^4.6.0",
     "lodash": "^4.17.15",
     "moment": "^2.24.0",
-    "murmurhash": "^0.0.2",
-    "tslib": "^1.11.1"
+    "murmurhash": "^0.0.2"
   }
 }

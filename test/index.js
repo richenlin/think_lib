@@ -10,7 +10,7 @@ const fs = require('fs');
 const path = require('path');
 const assert = require('assert');
 
-const lib = require('../dist/index');
+const lib = require('../index');
 
 describe('think_lib', function () {
     before(function () { });
@@ -513,7 +513,7 @@ describe('think_lib', function () {
         assert.equal(lib.isPromise(lib.getDefer().promise), true);
     });
     it("thinkrequire", function () {
-        assert.equal(lib.isObject(lib.thinkrequire(path.resolve("./dist/index.js"))), true);
+        assert.equal(lib.isObject(lib.thinkrequire(path.resolve("./index.js"))), true);
     });
     it("clone", function () {
         let data = { 'aa': { 'qq': 55555 } };
