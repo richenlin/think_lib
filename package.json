@@ -1,13 +1,12 @@
 {
   "name": "think_lib",
-  "version": "2.2.13",
+  "version": "2.3.0",
   "description": "ThinkKoa functions Libs.",
   "main": "index.js",
   "scripts": {
     "test": "npm run eslint && npm run test-cov",
-    "test-cov": "istanbul cover ./node_modules/mocha/bin/_mocha -- -t 50000 --recursive  -R spec test/",
+    "test-cov": "mocha -- -t 50000 --recursive  -R spec test/",
     "prepublish": "npm test",
-    "tsd": "dtsmake -s ./index.js",
     "eslint": "eslint index.js"
   },
   "engines": {
@@ -23,14 +22,13 @@
   },
   "homepage": "https://github.com/thinkkoa/think_lib",
   "devDependencies": {
-    "dtsmake": "0.0.10",
-    "eslint": "^6.2.1",
-    "istanbul": "^1.1.0-alpha.1",
+    "eslint": "^6.8.0",
     "mocha": "^6.2.0"
   },
   "dependencies": {
     "co": "^4.6.0",
     "lodash": "^4.17.15",
-    "moment": "^2.24.0"
+    "moment": "^2.24.0",
+    "murmurhash": "^0.0.2"
   }
 }
