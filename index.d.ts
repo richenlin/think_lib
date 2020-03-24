@@ -193,6 +193,16 @@ declare function ucFirst(value: string): string;
 declare function md5(value: string): string;
 
 /**
+ * Murmur hash v2/v3
+ *
+ * @param {String} value
+ * @param {Number} seed default is 97
+ * @param {Number} ver default is 2
+ * @returns {string}
+ */
+declare function murmurHash(value: String, seed?: number, ver?: number): string;
+
+/**
  * Calculate the value of MD5 hash value, including simple salt
  * 
  * @param {string} value

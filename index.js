@@ -14,6 +14,8 @@ const path = require('path');
 const crypto = require('crypto');
 const lodash = require('lodash');
 const moment = require('moment');
+const murmur = require('./lib/murmur');
+const murmurhash = require('murmurhash');
 
 /**
  * Formatted console.log output
@@ -36,6 +38,7 @@ global.echo = function (str) {
  * @returns {void}
  */
 function toFastProperties(obj) {
+    // eslint-disable-next-line no-empty-function
     let f = function f() { };
     f.prototype = obj;
     /*eslint-disable no-new*/
@@ -241,7 +244,7 @@ function isClass(obj, strict = true) {
         return false;
     }
     // ES6 class
-    if (str.slice(0, 5) == 'class') {
+    if (str.slice(0, 5) === 'class') {
         return true;
     }
     // has own prototype properties
@@ -413,6 +416,7 @@ function datetime(date, format) {
 function inArray(value, arr) {
     let len = arr.length;
     for (let i = 0; i < len; i++) {
+        // eslint-disable-next-line eqeqeq
         if (arr[i] == value) {
             return true;
         }
@@ -735,7 +739,7 @@ function extend(source, target, deep) {
  * 
  * @param {*} string 
  */
-const preserveCamelCase = string => {
+function preserveCamelCase(string) {
     let isLastCharLower = false;
     let isLastCharUpper = false;
     let isLastLastCharUpper = false;
@@ -762,14 +766,14 @@ const preserveCamelCase = string => {
     }
 
     return string;
-};
+}
 
 /**
  * 
  * @param {*} input 
  * @param {*} options 
  */
-const camelCase = (input, options) => {
+function camelCase(input, options) {
     if (!(typeof input === 'string' || Array.isArray(input))) {
         throw new TypeError('Expected the input to be `string | string[]`');
     }
@@ -809,7 +813,23 @@ const camelCase = (input, options) => {
         .replace(/\d+(\w|$)/g, m => m.toUpperCase());
 
     return postProcess(input);
-};
+}
+
+/**
+ * Murmur hash v2/v3
+ *
+ * @param {String} key
+ * @param {Number} seed default is 97
+ * @param {Number} ver default is 2
+ * @return {Number} hash value
+ */
+function murmurHash(value, seed = 97, ver = 2) {
+    if (ver === 3) {
+        return murmurhash.v3(value, seed);
+    } else {
+        return murmurhash.v2(value, seed);
+    }
+}
 
 //module exports
 module.exports = new Proxy({
@@ -853,6 +873,7 @@ module.exports = new Proxy({
     ucFirst: ucFirst,
     md5: md5,
     md5Salt: md5Salt,
+    murmurHash: murmurHash,
     rand: rand,
     datetime: datetime,
     inArray: inArray,
@@ -891,6 +912,7 @@ module.exports = new Proxy({
             throw Error('Cannot redefine getter-only property');
         }
     },
+    // eslint-disable-next-line no-unused-vars
     deleteProperty: function (target, key) {
         throw Error('Cannot delete getter-only property');
     }
