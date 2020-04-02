@@ -519,4 +519,53 @@ declare function arrUnique<T>(...arrays: Array<Array<T> | null | undefined>): T[
 declare function isFunction(value: any): value is (...args: any[]) => boolean;
 
 
+/**
+ * Floating point addition
+ *
+ * @param {number} num1
+ * @param {number} num2
+ * @param {...number[]} others
+ * @returns {number}
+ */
+declare function plus(num1: number, num2: number, ...others: number[]): number;
+
+/**
+ * Floating point subtraction
+ *
+ * @param {number} num1
+ * @param {number} num2
+ * @param {...number[]} others
+ * @returns {number}
+ */
+declare function minus(num1: number, num2: number, ...others: number[]): number;
+
+/**
+ * Floating point multiplication
+ *
+ * @param {number} num1
+ * @param {number} num2
+ * @param {...number[]} others
+ * @returns {number}
+ */
+declare function multi(num1: number, num2: number, ...others: number[]): number;
+
+/**
+ * Floating point division
+ *
+ * @param {number} num1
+ * @param {number} num2
+ * @param {...number[]} others
+ * @returns {number}
+ */
+declare function divide(num1: number, num2: number, ...others: number[]): number;
+
+/**
+ * Rounding
+ *
+ * @param {number} num
+ * @param {number} ratio
+ * @returns {number}
+ */
+declare function round(num: number, ratio: number): number;
+
 declare module "think_lib" { }

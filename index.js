@@ -3,7 +3,7 @@
  * @ author: richen
  * @ copyright: Copyright (c) - <richenlin(at)gmail.com>
  * @ license: MIT
- * @ version: 2020-03-25 02:54:22
+ * @ version: 2020-04-01 12:03:31
  */
 const fs = require('fs');
 const co = require('co');
@@ -392,7 +392,9 @@ const dateFn = function (f) {
     // let Week = ['日', '一', '二', '三', '四', '五', '六'];
     f = f.replace(/yyyy/, 'YYYY');
     f = f.replace(/yy/, 'YY');
-    f = f.replace(/mm/, 'MM');
+    if (f.search(/^YY+.mm/) > -1) {
+        f = f.replace(/mm/, 'MM');
+    }
     f = f.replace(/mi|MI/, 'mm');
     // f = f.replace(/w|W/g, Week[d.getDay()]);
     f = f.replace(/dd/, 'DD');
@@ -404,7 +406,7 @@ const dateFn = function (f) {
  *
  * @export
  * @param {(number | string | undefined)} date
- * @param {string} [format] defaults  'YYYY-MM-DD HH:mm:ss.SSS'
+ * @param {string} [format] defaults  'YYYY-MM-DD hh:mi:ss.SSS'
  * @param {number} [offset] defaults  8
  * @returns {(number | string)}
  */
@@ -886,6 +888,134 @@ function murmurHash(value, seed = 97, ver = 2) {
     }
 }
 
+/**
+ * 把错误的数据转正
+ * strip(0.09999999999999998)=0.1
+ */
+function strip(num, precision = 12) {
+    return +parseFloat(num.toPrecision(precision));
+}
+
+/**
+ * Return digits length of a number
+ * @param {*number} num Input number
+ */
+function digitLength(num) {
+    // Get digit length of e
+    const eSplit = num.toString().split(/[eE]/);
+    const len = (eSplit[0].split('.')[1] || '').length - (+(eSplit[1] || 0));
+    return len > 0 ? len : 0;
+}
+
+/**
+ * 把小数转成整数，支持科学计数法。如果是小数则放大成整数
+ * @param {*number} num 输入数
+ */
+function float2Fixed(num) {
+    if (num.toString().indexOf('e') === -1) {
+        return Number(num.toString().replace('.', ''));
+    }
+    const dLen = digitLength(num);
+    return dLen > 0 ? strip(num * Math.pow(10, dLen)) : num;
+}
+
+/**
+ * 检测数字是否越界，如果越界给出提示
+ * @param {*number} num 输入数
+ */
+function checkBoundary(num) {
+    if (num > Number.MAX_SAFE_INTEGER || num < Number.MIN_SAFE_INTEGER) {
+        throw Error(`${num} is beyond boundary when transfer to integer, the results may not be accurate`);
+    }
+}
+
+/**
+ * 精确乘法
+ *
+ * @param {*} num1
+ * @param {*} num2
+ * @param {*} others
+ * @returns
+ */
+function multi(num1, num2, ...others) {
+    if (others.length > 0) {
+        return multi(multi(num1, num2), others[0], ...others.slice(1));
+    }
+    const num1Changed = float2Fixed(num1);
+    const num2Changed = float2Fixed(num2);
+    const baseNum = digitLength(num1) + digitLength(num2);
+    const leftValue = num1Changed * num2Changed;
+
+    checkBoundary(leftValue);
+
+    return leftValue / Math.pow(10, baseNum);
+}
+
+/**
+ * 精确加法
+ *
+ * @param {*} num1
+ * @param {*} num2
+ * @param {*} others
+ * @returns
+ */
+function plus(num1, num2, ...others) {
+    if (others.length > 0) {
+        return plus(plus(num1, num2), others[0], ...others.slice(1));
+    }
+    const baseNum = Math.pow(10, Math.max(digitLength(num1), digitLength(num2)));
+    return (multi(num1, baseNum) + multi(num2, baseNum)) / baseNum;
+}
+
+/**
+ * 精确减法
+ *
+ * @param {*} num1
+ * @param {*} num2
+ * @param {*} others
+ * @returns
+ */
+function minus(num1, num2, ...others) {
+    if (others.length > 0) {
+        return minus(minus(num1, num2), others[0], ...others.slice(1));
+    }
+    const baseNum = Math.pow(10, Math.max(digitLength(num1), digitLength(num2)));
+    return (multi(num1, baseNum) - multi(num2, baseNum)) / baseNum;
+}
+
+/**
+ * 精确除法
+ *
+ * @param {*} num1
+ * @param {*} num2
+ * @param {*} others
+ * @returns
+ */
+function divide(num1, num2, ...others) {
+    if (others.length > 0) {
+        return divide(divide(num1, num2), others[0], ...others.slice(1));
+    }
+    const num1Changed = float2Fixed(num1);
+    const num2Changed = float2Fixed(num2);
+    checkBoundary(num1Changed);
+    checkBoundary(num2Changed);
+    // fix: 类似 10 ** -4 为 0.00009999999999999999，strip 修正
+    return multi((num1Changed / num2Changed), strip(Math.pow(10, digitLength(num2) - digitLength(num1))));
+}
+
+/**
+ * 四舍五入
+ *
+ * @param {*} num
+ * @param {*} ratio
+ * @returns
+ */
+function round(num, ratio) {
+    const base = Math.pow(10, ratio);
+    return divide(Math.round(multi(num, base)), base);
+}
+
+
 module.exports = new Proxy({
     sep: path.sep,
     eq: lodash.eq,
@@ -958,7 +1088,12 @@ module.exports = new Proxy({
     extend: extend,
     define: define,
     toFastProperties: toFastProperties,
-    camelCase: camelCase
+    camelCase: camelCase,
+    plus: plus,
+    minus: minus,
+    multi: multi,
+    divide: divide,
+    round: round
 }, {
     set: function (target, key, value, receiver) {
         if (Reflect.get(target, key, receiver) === undefined) {
