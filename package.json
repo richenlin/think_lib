@@ -1,6 +1,6 @@
 {
   "name": "think_lib",
-  "version": "2.5.2",
+  "version": "2.6.0",
   "description": "ThinkKoa functions Libs.",
   "main": "index.js",
   "scripts": {
@@ -28,6 +28,7 @@
   "dependencies": {
     "co": "^4.6.0",
     "lodash": "^4.17.15",
-    "murmurhash": "^0.0.2"
+    "moment": "^2.25.3",
+    "murmurhash": "^1.0.0"
   }
 }
